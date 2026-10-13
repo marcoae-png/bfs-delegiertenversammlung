@@ -199,6 +199,99 @@ header .actions {
   margin: 6px 0;
 }
 
+/* Bestellungen in Arbeit: orange */
+.order.in-progress {
+  background-color: #fff0d6 !important;
+  border: 2px solid #f59e0b !important;
+}
+
+/* Fertig gemeldete Bestellung: grün */
+.order.done {
+  background-color: #dcfce7 !important;
+  border: 2px solid #22c55e !important;
+}
+
+/* Statusfarben auch bei verschachtelten Elementen gut lesbar */
+.order.in-progress h3 {
+  color: #9a3412;
+}
+
+.order.done h3 {
+  color: #166534;
+}
+
+
+
+/* Grundgestaltung der Navigation */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.tabs button {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s, filter 0.15s;
+  color: #fff;
+}
+
+.tabs button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+/* Neue Bestellung – Blau */
+.tabs button[data-tab="service"] {
+  background: #2563eb;
+}
+
+/* Küche – Orange */
+.tabs button[data-tab="orders"] {
+  background: #ea580c;
+}
+
+/* Theke / Ausschank – Violett */
+.tabs button[data-tab="bar"] {
+  background: #7c3aed;
+}
+
+/* Läufer – Grün */
+.tabs button[data-tab="runner"] {
+  background: #15803d;
+}
+
+/* Tagesabschluss – Dunkelgrau */
+.tabs button[data-tab="closing"] {
+  background: #475569;
+}
+
+/* Menü verwalten – Dunkelrot */
+.tabs button[data-tab="admin"] {
+  background: #b91c1c;
+}
+
+/* Aktiver Reiter */
+.tabs button.active {
+  border-color: #111827;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.22);
+  filter: brightness(1.12);
+}
+
+/* Auf Handys gut bedienbar */
+@media (max-width: 600px) {
+  .tabs button {
+    flex: 1 1 140px;
+    min-height: 48px;
+    padding: 12px;
+  }
+}
+
 
 
 </style>
@@ -261,21 +354,79 @@ header .actions {
 <section id="appPanel" class="hidden">
 <div id="notice" class="msg hidden" role="status"></div>
 <nav class="tabs" id="tabs"></nav>
-<section id="serviceView" class="panel hidden"><h2 class="section-title">Neue Bestellung</h2><div class="grid"><div><label for="tableNumber">Tisch</label><select id="tableNumber"></select></div><div><label for="paymentMethod">Zahlungsart</label><select id="paymentMethod"><option value="cash">Bar</option><option value="twint">TWINT (manuell prüfen)</option></select></div></div><h3>Karte</h3><div id="menuGrid" class="menu-grid"></div><div class="actions" style="justify-content:space-between;margin-top:14px"><div><span class="muted">Total</span><div id="cartTotal" class="big">CHF 0.00</div></div><button id="submitOrderBtn" type="button">Bestellung senden</button></div><p class="foot">Die Zahlungsart wird zur Information erfasst. In dieser Version gibt es keine Zahlungsbestätigung.</p></section>
+
+
+
+<section id="serviceView" class="panel hidden">
+  <h2 class="section-title">Neue Bestellung</h2>
+
+  <div class="grid">
+    <div>
+      <label for="tableNumber">Tisch</label>
+      <select id="tableNumber"></select>
+    </div>
+
+    <div>
+      <label for="paymentMethod">Zahlungsart</label>
+      <select id="paymentMethod">
+        <option value="cash">Bar</option>
+        <option value="twint">TWINT (manuell prüfen)</option>
+      </select>
+    </div>
+  </div>
+
+  <h3>Karte</h3>
+  <div id="menuGrid" class="menu-grid"></div>
+
+  <div class="actions" style="justify-content:space-between;margin-top:14px">
+    <div>
+      <span class="muted">Total</span>
+      <div id="cartTotal" class="big">CHF 0.00</div>
+    </div>
+    <button id="submitOrderBtn" type="button">
+      Bestellung senden
+    </button>
+  </div>
+
+  <p class="foot">
+    Die Zahlungsart wird bei neuen Bestellungen zur Information erfasst.
+  </p>
+
+  <hr style="margin:24px 0">
+
+  <h3>Getränke abrechnen</h3>
+  <p class="muted">
+    Offene Getränkebestellungen auswählen und pro Person abrechnen.
+    Bereits bezahlte Menüs bleiben unberücksichtigt.
+  </p>
+
+  <div id="drinkPaymentList">
+    <p class="muted">Getränkebestellungen werden geladen …</p>
+  </div>
+</section>
+
 
 
 
 <section id="ordersView" class="panel hidden">
-  <!-- Küchenbereich -->
   <h2>Bestellungen Küche</h2>
   <div id="ordersList">
     <p class="muted">Bestellungen werden geladen …</p>
   </div>
 </section>
 
+<section id="barView" class="panel hidden">
+  <h2>Bestellungen Theke / Ausschank</h2>
+  <div id="barList">
+    <p class="muted">Getränkebestellungen werden geladen …</p>
+  </div>
+</section>
+
 <section id="runnerView" class="panel hidden">
   <h2>Bereit zum Ausliefern</h2>
-  <p class="muted">Hier erscheinen fertige Bestellungen für den Läufer.</p>
+  <p class="muted">
+    Hier erscheinen Bestellungen, sobald Küche und Theke fertig sind.
+  </p>
 
   <button type="button" id="refreshRunnerBtn" class="warn">
     Läuferliste aktualisieren
@@ -291,19 +442,7 @@ header .actions {
 
 
 
-<div class="order-top"><h2 class="section-title">Bestellungen</h2><div class="actions"><button id="refreshOrdersBtn" class="secondary" type="button">Aktualisieren</button></div></div><div id="ordersList"></div></section>
 
-
-
-<section id="runnerView" class="panel hidden">
-  <div class="order-top">
-    <h2 class="section-title">Läufer – bereit zur Auslieferung</h2>
-    <button id="refreshRunnerBtn" class="secondary" type="button">
-      Aktualisieren
-    </button>
-  </div>
-  <div id="runnerList"></div>
-</section>
 
 
 
@@ -377,9 +516,11 @@ function validConfig(c){return /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(c.ur
 async function initConnection(){const c=getConfig();if(!validConfig(c)){say('Bitte eine gültige Supabase-URL und den öffentlichen anon/publishable Key eingeben.',true);return false;}sb=window.supabase.createClient(c.url,c.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});try{const {error}=await sb.auth.getSession();if(error)throw error;localStorage.setItem(CONFIG_KEY,JSON.stringify(c));$('configPanel').classList.add('hidden');$('loginPanel').classList.remove('hidden');return true;}catch(e){say('Verbindung fehlgeschlagen: '+e.message,true);return false;}}
 async function connectTest(){const c=getConfig();if(!validConfig(c)){say('Bitte URL und Public Key korrekt eintragen.',true);return;}const test=window.supabase.createClient(c.url,c.key);const {error}=await test.auth.getSession();if(error)say('Verbindungstest fehlgeschlagen: '+error.message,true);else say('Supabase ist erreichbar. Anmeldung benötigt ein gültiges Benutzerkonto.');}
 async function loadProfile(){profile={id:currentUser.id,email:currentUser.email||'',display_name:currentUser.user_metadata?.display_name||currentUser.email||'Angemeldeter Benutzer',role:'all'};}
+
+
+
 async function onSignedIn(user){currentUser=user;try{await loadProfile();$('loginPanel').classList.add('hidden');$('appPanel').classList.remove('hidden');$('logoutBtn').classList.remove('hidden');$('userLabel').textContent=profile.display_name||profile.email||user.email;renderTabs();await loadMenu();await refreshOrders();await loadAdmin();await loadClosingHistory();showTab(firstTab());}catch(e){say('Daten konnten nicht geladen werden: '+e.message+' — bitte Supabase-Berechtigungen prüfen.',true);}}
 function firstTab(){return 'service';}
-
 
 
 
@@ -392,6 +533,7 @@ function allowed(tab) {
   return [
     'service',
     'orders',
+    'bar',
     'runner',
     'closing',
     'admin'
@@ -402,67 +544,55 @@ function allowed(tab) {
 
 
 
-
-
-  
 function renderTabs() {
   const all = [
     ['service', 'Neue Bestellung'],
     ['orders', 'Küche'],
+    ['bar', 'Theke / Ausschank'],
     ['runner', 'Läufer'],
     ['closing', 'Tagesabschluss'],
     ['admin', 'Menü verwalten']
   ];
 
-  $('tabs').innerHTML = all
-    .filter(([t]) => allowed(t))
-    .map(([t, n]) =>
-      `<button type="button" data-tab="${t}" class="${t === activeTab ? 'active' : ''}">${n}</button>`
+  const tabs = $('tabs');
+  if (!tabs) {
+    console.error('HTML-Element #tabs fehlt.');
+    return;
+  }
+
+  tabs.innerHTML = all
+    .filter(([tab]) => allowed(tab))
+    .map(([tab, name]) =>
+      `<button type="button" data-tab="${tab}" class="${tab === activeTab ? 'active' : ''}">${name}</button>`
     )
     .join('');
 
-  $('tabs').querySelectorAll('button').forEach(b => {
-    b.addEventListener('click', () => showTab(b.dataset.tab));
+  tabs.querySelectorAll('button').forEach(button => {
+    button.addEventListener('click', () => showTab(button.dataset.tab));
   });
 
-  $('tableNumber').innerHTML = Array.from(
-    { length: 30 },
-    (_, i) => `<option value="${i + 1}">Tisch ${i + 1}</option>`
-  ).join('');
+  const tableNumber = $('tableNumber');
+  if (tableNumber) {
+    tableNumber.innerHTML = Array.from(
+      { length: 30 },
+      (_, i) => `<option value="${i + 1}">Tisch ${i + 1}</option>`
+    ).join('');
+  }
 
-  $('closingDate').value = new Date().toLocaleDateString('en-CA');
+  const closingDate = $('closingDate');
+  if (closingDate) {
+    closingDate.value = new Date().toLocaleDateString('en-CA');
+  }
+
+  console.log(
+    'Erzeugte Tabs:',
+    [...tabs.querySelectorAll('button')].map(button => button.dataset.tab)
+  );
 }
 
 
 
 
-function renderTabs() {
-  const all = [
-    ['service', 'Neue Bestellung'],
-    ['orders', 'Küche'],
-    ['runner', 'Läufer'],
-    ['closing', 'Tagesabschluss'],
-    ['admin', 'Menü verwalten']
-  ];
-
-  $('tabs').innerHTML = all
-    .filter(([t]) => allowed(t))
-    .map(([t, n]) =>
-      `<button type="button" data-tab="${t}" class="${t === activeTab ? 'active' : ''}">${n}</button>`
-    )
-    .join('');
-
-  $('tabs').querySelectorAll('button').forEach(b => {
-    b.addEventListener('click', () => showTab(b.dataset.tab));
-  });
-
-  $('tableNumber').innerHTML = Array.from(
-    { length: 30 },
-    (_, i) => `<option value="${i + 1}">Tisch ${i + 1}</option>`
-  ).join('');
-
-  $('closingDate').value = new Date().toLocaleDateString('en-CA');
-}
 
 
 
@@ -473,27 +603,35 @@ function showTab(tab) {
   activeTab = tab;
 
   console.log('Aktiver Tab:', tab);
-console.log('Läuferbereich:', $('runnerView'));
+  console.log('Läuferbereich:', $('runnerView'));
+  console.log('Thekenbereich:', $('barView'));
 
-  ['service', 'orders', 'runner', 'closing', 'admin']
+  // Alle Ansichten ausblenden und nur den aktiven Bereich anzeigen
+  ['service', 'orders', 'bar', 'runner', 'closing', 'admin']
     .forEach(t => {
-      $(t + 'View').classList.toggle('hidden', t !== tab);
+      const view = $(t + 'View');
+
+      if (view) {
+        view.classList.toggle('hidden', t !== tab);
+      }
     });
 
+  // Aktiven Reiter markieren
   $('tabs').querySelectorAll('button').forEach(b => {
     b.classList.toggle('active', b.dataset.tab === tab);
   });
 
-  if (tab === 'orders' || tab === 'runner') {
+  // Bestellungen beim Öffnen der Arbeitsbereiche aktualisieren
+  if (['orders', 'bar', 'runner'].includes(tab)) {
     refreshOrders();
   }
 
+  // Weitere Bereiche laden
   if (tab === 'admin') loadAdmin();
   if (tab === 'closing') loadClosingHistory();
 
   clearSay();
 }
-
 
 
 
@@ -522,21 +660,69 @@ async function submitOrder(){if(!cart.size)return;const table=Number($('tableNum
 
 
 
-  
+ 
 async function refreshOrders() {
   if (!sb || !profile) return;
 
   try {
     const { data, error } = await sb
       .from('orders')
-      .select('id,table_no,table_number,status,payment_method,payment_status,total,created_at,delivered_at,order_items(id,name_snapshot,name,category,quantity,unit_price,line_total)')
+      .select(`
+        id,
+        table_no,
+        table_number,
+        status,
+        kitchen_status,
+        bar_status,
+        payment_method,
+        payment_status,
+        total,
+        created_at,
+        delivered_at,
+        order_items(
+          id,
+          name_snapshot,
+          name,
+          category,
+          quantity,
+          unit_price,
+          line_total
+        )
+      `)
       .order('created_at', { ascending: false })
       .limit(150);
 
     if (error) throw error;
 
-    orders = (data || []).map(o => ({
+    const geladeneBestellungen = data || [];
+    const orderIds = geladeneBestellungen.map(o => o.id);
+
+    // Bereits verbuchte Teilzahlungen aus Supabase laden
+    let zahlungen = [];
+
+    if (orderIds.length) {
+      const { data: paymentData, error: paymentError } =
+        await sb.rpc('get_drink_payment_status', {
+          p_order_ids: orderIds
+        });
+
+      if (paymentError) throw paymentError;
+      zahlungen = paymentData || [];
+    }
+
+    const zahlungenNachPosition = new Map(
+      zahlungen.map(p => [
+        String(p.order_item_id),
+        {
+          paid_quantity: Number(p.paid_quantity || 0),
+          paid_amount: Number(p.paid_amount || 0)
+        }
+      ])
+    );
+
+    orders = geladeneBestellungen.map(o => ({
       ...o,
+
       order_no: o.order_no ?? o.id,
       table_number: o.table_number ?? o.table_no,
 
@@ -549,65 +735,92 @@ async function refreshOrders() {
         'done': 'done'
       })[o.status] || 'new',
 
+      kitchen_status: ({
+        'Neu': 'new',
+        'In Arbeit': 'in_progress',
+        'Erledigt': 'done',
+        'new': 'new',
+        'in_progress': 'in_progress',
+        'done': 'done'
+      })[o.kitchen_status] || 'new',
+
+      bar_status: ({
+        'Neu': 'new',
+        'In Arbeit': 'in_progress',
+        'Erledigt': 'done',
+        'new': 'new',
+        'in_progress': 'in_progress',
+        'done': 'done'
+      })[o.bar_status] || 'new',
+
       payment_method:
         String(o.payment_method || '').toLowerCase() === 'twint'
           ? 'twint'
           : 'cash',
 
-      order_items: (o.order_items || []).map(i => ({
-        ...i,
-        name_snapshot: i.name_snapshot || i.name || 'Artikel',
-        line_total: i.line_total ??
-          Number(i.unit_price || 0) * Number(i.quantity || 0)
-      }))
+      order_items: (o.order_items || []).map(i => {
+        const bezahlt = zahlungenNachPosition.get(String(i.id)) || {
+          paid_quantity: 0,
+          paid_amount: 0
+        };
+
+        const quantity = Number(i.quantity || 0);
+        const unitPrice = Number(i.unit_price || 0);
+        const lineTotal = i.line_total == null
+          ? unitPrice * quantity
+          : Number(i.line_total);
+
+        const istGetraenk = [
+          'getränke',
+          'getraenke',
+          'drinks'
+        ].includes(
+          String(i.category || '')
+            .trim()
+            .toLowerCase()
+        );
+
+        return {
+          ...i,
+          name_snapshot: i.name_snapshot || i.name || 'Artikel',
+          line_total: lineTotal,
+
+          // Teilzahlungen gelten nur für Getränke
+          paid_quantity: istGetraenk
+            ? bezahlt.paid_quantity
+            : 0,
+
+          paid_amount: istGetraenk
+            ? bezahlt.paid_amount
+            : 0,
+
+          open_quantity: istGetraenk
+            ? Math.max(0, quantity - bezahlt.paid_quantity)
+            : 0,
+
+          open_amount: istGetraenk
+            ? Math.max(
+                0,
+                Math.round(
+                  (quantity - bezahlt.paid_quantity) *
+                  unitPrice * 100
+                ) / 100
+              )
+            : 0
+        };
+      })
     }));
 
-    // Küchenliste und Läuferliste aktualisieren
     renderOrders();
 
   } catch (e) {
-    say('Bestellungen konnten nicht geladen werden: ' + e.message, true);
+    console.error('refreshOrders:', e);
+    say(
+      'Bestellungen konnten nicht geladen werden: ' + e.message,
+      true
+    );
   }
 }
-
-
-
-/* Manuelles Aktualisieren für den Läufer */
-document.addEventListener('click', event => {
-  const button = event.target.closest('#refreshRunnerBtn');
-  if (!button) return;
-
-  refreshOrders();
-});
-
-
-
-/* Küche und Läufer auf jedem geöffneten Gerät automatisch aktualisieren */
-let orderRefreshTimer = null;
-let orderRefreshRunning = false;
-
-
-  
-async function autoRefreshOrders() {
-  if (orderRefreshRunning || !sb || !profile) return;
-
-  orderRefreshRunning = true;
-
-  try {
-    await refreshOrders();
-  } finally {
-    orderRefreshRunning = false;
-  }
-}
-
-if (orderRefreshTimer !== null) {
-  clearInterval(orderRefreshTimer);
-}
-
-orderRefreshTimer = setInterval(autoRefreshOrders, 3000);
-
-// Beim Start sofort laden
-autoRefreshOrders();
 
 
 
@@ -702,30 +915,56 @@ function orderHTML(o) {
 
 
 function renderOrders() {
+  const isDone = status =>
+    ['done', 'erledigt', 'fertig', 'abgeschlossen'].includes(
+      String(status || '').trim().toLowerCase()
+    );
+
+  const isDrink = item =>
+    String(item.category || '').trim().toLowerCase() === 'getränke';
+
   // =========================
-  // KÜCHENLISTE
+  // KÜCHE: Essen, Dessert, Sonstiges
   // =========================
   const ordersList = $('ordersList');
 
   if (ordersList) {
-    const showDone = orders.filter(
-      o => o.status !== 'done' ||
-           recentlyDone.has(String(o.id))
-    );
-
-    ordersList.innerHTML = showDone.length
-      ? showDone.map(orderHTML).join('')
-      : '<p class="muted">Keine Bestellungen vorhanden.</p>';
-
-    ordersList.querySelectorAll('[data-status]').forEach(button => {
-      button.addEventListener('click', () => {
-        setStatus(button.dataset.status, button.dataset.next);
-      });
+    const kitchenOrders = orders.filter(o => {
+      const items = (o.order_items || []).filter(i => !isDrink(i));
+      return items.length > 0 &&
+        (!isDone(o.kitchen_status) ||
+         recentlyDone.has('kitchen-' + String(o.id)));
     });
+
+    ordersList.innerHTML = kitchenOrders.length
+      ? kitchenOrders.map(o => stationOrderHTML(o, 'kitchen')).join('')
+      : '<p class="muted">Keine offenen Küchenbestellungen.</p>';
+
+    bindStationButtons(ordersList);
   }
 
   // =========================
-  // LÄUFERLISTE
+  // THEKE: nur Getränke
+  // =========================
+  const barList = $('barList');
+
+  if (barList) {
+    const barOrders = orders.filter(o => {
+      const items = (o.order_items || []).filter(isDrink);
+      return items.length > 0 &&
+        (!isDone(o.bar_status) ||
+         recentlyDone.has('bar-' + String(o.id)));
+    });
+
+    barList.innerHTML = barOrders.length
+      ? barOrders.map(o => stationOrderHTML(o, 'bar')).join('')
+      : '<p class="muted">Keine offenen Getränkebestellungen.</p>';
+
+    bindStationButtons(barList);
+  }
+
+  // =========================
+  // LÄUFER: erst wenn alle Stationen fertig sind
   // =========================
   const runnerList = $('runnerList');
 
@@ -735,32 +974,30 @@ function renderOrders() {
   }
 
   const ready = orders.filter(o => {
-    const status = String(o.status || '').trim().toLowerCase();
+    const items = o.order_items || [];
+    const hasKitchen = items.some(i => !isDrink(i));
+    const hasBar = items.some(isDrink);
 
-    return (
-      ['done', 'erledigt', 'fertig', 'abgeschlossen'].includes(status) &&
-      !o.delivered_at
-    );
+    return !o.delivered_at &&
+      (!hasKitchen || isDone(o.kitchen_status)) &&
+      (!hasBar || isDone(o.bar_status));
   });
 
   runnerList.innerHTML = ready.length
     ? ready.map(o => `
         <article class="order">
           <h3>Bestellung #${esc(String(o.order_no ?? o.id))}</h3>
-          <p><strong>Tisch ${esc(String(o.table_number ?? o.table_no ?? '?'))}</strong></p>
-
+          <p><strong>Tisch ${esc(String(
+            o.table_number ?? o.table_no ?? '?'
+          ))}</strong></p>
           <ul>
             ${(o.order_items || []).map(i => `
-              <li>
-                ${esc(String(i.quantity))} ×
+              <li>${esc(String(i.quantity))} ×
                 ${esc(String(i.name_snapshot || i.name || 'Artikel'))}
               </li>
             `).join('')}
           </ul>
-
-          <button
-            type="button"
-            class="warn"
+          <button type="button" class="warn"
             data-deliver="${esc(String(o.id))}">
             Ausgeliefert
           </button>
@@ -768,11 +1005,9 @@ function renderOrders() {
       `).join('')
     : '<p class="muted">Keine fertigen Bestellungen zum Ausliefern.</p>';
 
-  // Auslieferungs-Knöpfe aktivieren
   runnerList.querySelectorAll('[data-deliver]').forEach(button => {
     button.addEventListener('click', async () => {
       button.disabled = true;
-
       try {
         await markOrderDelivered(button.dataset.deliver);
       } catch (e) {
@@ -781,14 +1016,180 @@ function renderOrders() {
       }
     });
   });
-
-  console.log('Fertige Bestellungen für Läufer:', ready.length);
-  console.log(
-    'Angezeigte Läuferkarten:',
-    runnerList.querySelectorAll('article.order').length
-  );
 }
 
+
+
+
+
+
+
+function stationOrderHTML(order, station) {
+  const isDrink = item =>
+    String(item.category || '').trim().toLowerCase() === 'getränke';
+
+  // Nur die Artikel anzeigen, die zu dieser Station gehören
+  const items = (order.order_items || []).filter(item =>
+    station === 'bar' ? isDrink(item) : !isDrink(item)
+  );
+
+  // Bestellungen ohne Artikel für diese Station nicht anzeigen
+  if (items.length === 0) return '';
+
+  const status = station === 'bar'
+    ? order.bar_status
+    : order.kitchen_status;
+
+  const normalizedStatus = String(status || '')
+    .trim()
+    .toLowerCase();
+
+  const done = [
+    'done', 'erledigt', 'fertig', 'abgeschlossen'
+  ].includes(normalizedStatus);
+
+  const inProgress = [
+    'in_progress', 'in arbeit'
+  ].includes(normalizedStatus);
+
+  const next = inProgress ? 'done' : 'in_progress';
+
+  const buttonText = done
+    ? 'Erledigt'
+    : inProgress
+      ? 'Fertig melden'
+      : 'In Arbeit';
+
+  const stationName = station === 'bar'
+    ? 'Theke / Ausschank'
+    : 'Küche';
+
+  return `
+    <article class="order ${
+      done ? 'done' : inProgress ? 'in-progress' : ''
+    }">
+      <h3>Bestellung #${esc(String(order.order_no ?? order.id))}</h3>
+
+      <p><strong>
+        Tisch ${esc(String(
+          order.table_number ?? order.table_no ?? '?'
+        ))}
+      </strong></p>
+
+      <p class="muted">${stationName}</p>
+
+      <ul>
+        ${items.map(item => `
+          <li>
+            ${esc(String(item.quantity))} ×
+            ${esc(String(item.name_snapshot || item.name || 'Artikel'))}
+          </li>
+        `).join('')}
+      </ul>
+
+      <button
+        type="button"
+        data-station="${station}"
+        data-station-order="${esc(String(order.id))}"
+        data-next="${next}"
+        ${done ? 'disabled' : ''}>
+        ${buttonText}
+      </button>
+    </article>
+  `;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function bindStationButtons(container) {
+  container.querySelectorAll('[data-station-order]').forEach(button => {
+    button.addEventListener('click', async () => {
+      if (button.disabled) return;
+
+      const orderId = button.dataset.stationOrder;
+      const station = button.dataset.station;
+      const nextStatus = button.dataset.next;
+
+      button.disabled = true;
+
+      try {
+        await setStationStatus(
+          orderId,
+          station,
+          nextStatus
+        );
+
+        // Status und Stationslisten nach dem Speichern aktualisieren
+        await refreshOrders();
+
+      } catch (e) {
+        button.disabled = false;
+
+        say(
+          'Status konnte nicht geändert werden: ' +
+          (e?.message || String(e)),
+          true
+        );
+      }
+    });
+  });
+}
+
+
+
+
+
+
+
+
+async function setStationStatus(orderId, station, nextStatus) {
+  if (!sb || !profile) {
+    throw new Error('Bitte zuerst anmelden.');
+  }
+
+  if (!['kitchen', 'bar'].includes(station)) {
+    throw new Error('Ungültige Station.');
+  }
+
+  if (!['in_progress', 'done'].includes(nextStatus)) {
+    throw new Error('Ungültiger Status.');
+  }
+
+  const id = String(orderId);
+
+  const { error } = await sb.rpc('set_station_status', {
+    p_order_id: Number(id),
+    p_station: station,
+    p_status: nextStatus
+  });
+
+  if (error) throw error;
+
+  if (nextStatus === 'done') {
+    const key = station + '-' + id;
+
+    // Bestellung noch kurz grün anzeigen
+    recentlyDone.add(key);
+    renderOrders();
+
+    setTimeout(() => {
+      recentlyDone.delete(key);
+      renderOrders();
+    }, 2000);
+  }
+
+  // Daten nach der Statusänderung erneut vom Server laden
+  await refreshOrders();
+}
 
 
 
@@ -930,18 +1331,167 @@ async function toggleMenu(id, active) {
 async function calculateClosing(){const date=$('closingDate').value;if(!date){say('Bitte ein Datum auswählen.',true);return null;}try{const {data,error}=await sb.rpc('get_day_summary',{p_business_date:date});if(error)throw error;const d=Array.isArray(data)?data[0]:data;if(!d)throw new Error('Keine Abrechnung erhalten.');$('closingSummary').innerHTML=`<div class="totals"><div class="totalbox">Umsatz Bestellungen<strong>${money(d.total_sales)}</strong></div><div class="totalbox">Bar bezahlt<strong>${money(d.cash_total)}</strong></div><div class="totalbox">TWINT bezahlt<strong>${money(d.twint_total)}</strong></div><div class="totalbox">Noch offen<strong>${money(d.open_amount)}</strong></div><div class="totalbox">Anzahl Bestellungen<strong>${Number(d.order_count||0)}</strong></div></div>`;return d;}catch(e){say('Abrechnung konnte nicht berechnet werden: '+e.message,true);return null;}}
 async function saveClosing(){const summary=await calculateClosing();if(!summary)return;if(Number(summary.open_amount)>0&&!confirm('Es sind noch offene Zahlungen vorhanden. Tagesabschluss trotzdem speichern?'))return;if(!confirm('Tagesabschluss für '+$('closingDate').value+' endgültig speichern?'))return;try{const {error}=await sb.rpc('close_business_day',{p_business_date:$('closingDate').value,p_notes:$('closingNotes').value.trim()});if(error)throw error;say('Tagesabschluss gespeichert.');await loadClosingHistory();}catch(e){say('Tagesabschluss konnte nicht gespeichert werden: '+e.message,true);}}
 async function loadClosingHistory(){try{const {data,error}=await sb.from('day_closings').select('business_date,closed_at,closed_by,total_sales,cash_total,twint_total,open_amount,order_count,notes').order('business_date',{ascending:false}).limit(30);if(error)throw error;$('closingHistory').innerHTML='<h3>Letzte Tagesabschlüsse</h3>'+(data?.length?`<table class="table"><thead><tr><th>Datum</th><th>Umsatz</th><th>Bar</th><th>TWINT</th><th>Offen</th><th>Gespeichert</th></tr></thead><tbody>${data.map(d=>`<tr><td>${esc(d.business_date)}</td><td>${money(d.total_sales)}</td><td>${money(d.cash_total)}</td><td>${money(d.twint_total)}</td><td>${money(d.open_amount)}</td><td>${new Date(d.closed_at).toLocaleString('de-CH')}</td></tr>`).join('')}</tbody></table>`:'<p class="muted">Noch keine Tagesabschlüsse.</p>');}catch(e){say('Tagesabschluss-Historie konnte nicht geladen werden: '+e.message,true);}}
-async function logout(){if(sb)await sb.auth.signOut();currentUser=null;profile=null;orders=[];$('appPanel').classList.add('hidden');$('logoutBtn').classList.add('hidden');$('userLabel').textContent='';$('loginPanel').classList.remove('hidden');say('Du wurdest abgemeldet.');}
-$('saveConfigBtn').addEventListener('click',async()=>{if(await initConnection())say('Verbindung gespeichert. Du kannst dich jetzt anmelden.');});$('testConfigBtn').addEventListener('click',connectTest);$('loginBtn').addEventListener('click',async()=>{if(!sb&&!(await initConnection()))return;try{const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;await onSignedIn(data.user);}catch(e){say('Anmeldung fehlgeschlagen: '+e.message,true);}});$('logoutBtn').addEventListener('click',logout);$('submitOrderBtn').addEventListener('click',submitOrder);$('refreshOrdersBtn').addEventListener('click',refreshOrders);$('addMenuBtn').addEventListener('click',addMenuItem);$('previewClosingBtn').addEventListener('click',calculateClosing);$('saveClosingBtn').addEventListener('click',saveClosing);
-(async()=>{try{const raw=localStorage.getItem(CONFIG_KEY);if(raw){setConfigUI(JSON.parse(raw));}else{setConfigUI({url:'https://mkdsxgckckzxqaupilrp.supabase.co',key:'sb_publishable_dDoTEWtrcI8ulfVD4UiZZg_JsirepVu'});}if(await initConnection()){const {data:{session}}=await sb.auth.getSession();if(session)await onSignedIn(session.user);else $('loginPanel').classList.remove('hidden');}}catch(e){console.warn(e);say('Supabase-Verbindung konnte nicht initialisiert werden. Bitte Verbindung prüfen.',true);}})();
+
+
+
+
+async function logout() {
+  if (sb) await sb.auth.signOut();
+
+  currentUser = null;
+  profile = null;
+  orders = [];
+
+  $('appPanel')?.classList.add('hidden');
+  $('logoutBtn')?.classList.add('hidden');
+  if ($('userLabel')) $('userLabel').textContent = '';
+
+  $('loginPanel')?.classList.remove('hidden');
+
+  say('Du wurdest abgemeldet.');
+}
+
+
+
+
+async function loadProfile() {
+  profile = {
+    id: currentUser.id,
+    email: currentUser.email || '',
+    display_name:
+      currentUser.user_metadata?.display_name ||
+      currentUser.email ||
+      'Angemeldeter Benutzer',
+    role: 'all'
+  };
+}
+
+
+
+
+
+
+
+// Ereignisse sicher verbinden
+function onClickIfExists(id, handler) {
+  const element = $(id);
+
+  if (element) {
+    element.addEventListener('click', handler);
+  } else {
+    console.warn('HTML-Element fehlt:', id);
+  }
+}
+
+onClickIfExists('saveConfigBtn', async () => {
+  if (await initConnection()) {
+    say('Verbindung gespeichert. Du kannst dich jetzt anmelden.');
+  }
+});
+
+onClickIfExists('testConfigBtn', connectTest);
+
+onClickIfExists('loginBtn', async () => {
+  if (!sb && !(await initConnection())) return;
+
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({
+      email: $('email').value.trim(),
+      password: $('password').value
+    });
+
+    if (error) throw error;
+
+    await onSignedIn(data.user);
+  } catch (e) {
+    say('Anmeldung fehlgeschlagen: ' + e.message, true);
+  }
+});
+
+onClickIfExists('logoutBtn', logout);
+onClickIfExists('submitOrderBtn', submitOrder);
+onClickIfExists('refreshOrdersBtn', refreshOrders);
+onClickIfExists('refreshRunnerBtn', refreshOrders);
+onClickIfExists('addMenuBtn', addMenuItem);
+onClickIfExists('previewClosingBtn', calculateClosing);
+onClickIfExists('saveClosingBtn', saveClosing);
+
+
+
+
+
+// Reset-Handler: innerhalb der äusseren Hauptfunktion
+document.addEventListener('click', async function (event) {
+  const button = event.target.closest('#resetTodayOrdersBtn');
+  if (!button) return;
+
+  if (!sb || !currentUser) {
+    say('Bitte zuerst anmelden.', true);
+    return;
+  }
+
+  const bestaetigung = prompt(
+    'Alle heutigen Bestellungen und Positionen werden gelöscht.\n\nZum Bestätigen RESET eingeben:'
+  );
+
+  if (bestaetigung !== 'RESET') return;
+
+  const originalText = button.textContent;
+
+  try {
+    button.disabled = true;
+    button.textContent = 'Wird zurückgesetzt ...';
+
+    const { data, error } = await sb.rpc('reset_today_orders');
+    if (error) throw error;
+
+    await refreshOrders();
+    await loadAdmin();
+    await loadClosingHistory();
+
+    say(`${data} heutige Bestellungen wurden gelöscht.`, false);
+  } catch (e) {
+    console.error('Reset-Fehler:', e);
+    say('Zurücksetzen fehlgeschlagen: ' + e.message, true);
+  } finally {
+    button.disabled = false;
+    button.textContent = originalText;
+  }
+});
+
+// Initialisierung
+(async () => {
+  try {
+    const raw = localStorage.getItem(CONFIG_KEY);
+
+    if (raw) {
+      setConfigUI(JSON.parse(raw));
+    } else {
+      setConfigUI({
+        url: 'https://mkdsxgckckzxqaupilrp.supabase.co',
+        key: 'sb_publishable_dDoTEWtrcI8ulfVD4UiZZg_JsirepVu'
+      });
+    }
+
+    if (await initConnection()) {
+      const { data: { session } } = await sb.auth.getSession();
+
+      if (session) {
+        await onSignedIn(session.user);
+      } else {
+        $('loginPanel').classList.remove('hidden');
+      }
+    }
+  } catch (e) {
+    console.warn(e);
+    say('Supabase-Verbindung konnte nicht initialisiert werden. Bitte Verbindung prüfen.', true);
+  }
 })();
 
+// Ende der äusseren Hauptfunktion
+})();
 
-
-
-
-
-
-
+// Passwort anzeigen/verbergen: ausserhalb ist hier in Ordnung
 document.getElementById('togglePassword')?.addEventListener('click', function () {
   const password = document.getElementById('password');
   const anzeigen = password.type === 'password';
@@ -955,42 +1505,6 @@ document.getElementById('togglePassword')?.addEventListener('click', function ()
   );
 });
 
-
-
-
-
-
-document.addEventListener('click', async function (event) {
-  const button = event.target.closest('#resetTodayOrdersBtn');
-  if (!button) return;
-
-  console.log('Reset-Knopf wurde geklickt');
-
-  const bestaetigung = prompt(
-    'Alle heutigen Bestellungen und Positionen werden gelöscht.\n\nZum Bestätigen RESET eingeben:'
-  );
-
-  if (bestaetigung !== 'RESET') return;
-
-  try {
-    button.disabled = true;
-    button.textContent = 'Wird zurückgesetzt ...';
-
-    const { data, error } = await sb.rpc('reset_today_orders');
-    if (error) throw error;
-
-    await refreshOrders();
-    await loadAdmin();
-
-    say(`${data} heutige Bestellungen wurden gelöscht.`, false);
-  } catch (e) {
-    console.error('Reset-Fehler:', e);
-    say('Zurücksetzen fehlgeschlagen: ' + e.message, true);
-  } finally {
-    button.disabled = false;
-    button.textContent = 'Heutige Bestellungen zurücksetzen';
-  }
-});
 
 
 
