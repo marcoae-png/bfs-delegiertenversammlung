@@ -1694,8 +1694,10 @@ function renderOrders() {
   });
 
 runnerList.innerHTML = ready.length
-  ? ready.map(o => `
-      <article class="order">
+  ? 
+ready.map(o => `
+      <article class="order ${o.runner_status === 'in_delivery' ? 'in-delivery' : ''}">
+
         <h3>Bestellung #${esc(String(o.order_no ?? o.id))}</h3>
 
         <p><strong>Tisch ${esc(String(
