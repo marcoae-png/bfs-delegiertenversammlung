@@ -106,12 +106,20 @@ header .actions {
 
 
 
+
 <section id="runnerView" class="panel hidden">
   <h2>Bereit zum Ausliefern</h2>
   <p class="muted">Hier erscheinen fertige Bestellungen für den Läufer.</p>
-  <button type="button" id="refreshRunnerBtn">Aktualisieren</button>
-  <div id="runnerList"></div>
+
+  <button type="button" id="refreshRunnerBtn" class="warn">
+    Läuferliste aktualisieren
+  </button>
+
+  <div id="runnerList">
+    <p class="muted">Bestellungen werden geladen …</p>
+  </div>
 </section>
+
 
 
 
@@ -356,59 +364,97 @@ function orderHTML(o){const status=o.status==='new'?'Neu':o.status==='in_progres
 
   
 
+
 function renderOrders() {
-  // Küchenliste
-  const showDone = orders.filter(
-    o => o.status !== 'done' || recentlyDone.has(String(o.id))
-  );
+  // =========================
+  // KÜCHENLISTE
+  // =========================
+  const ordersList = $('ordersList');
 
-  $('ordersList').innerHTML = showDone.length
-    ? showDone.map(orderHTML).join('')
-    : '<p class="muted">Keine Bestellungen vorhanden.</p>';
-
-  $('ordersList').querySelectorAll('[data-status]').forEach(b => {
-    b.addEventListener('click', () =>
-      setStatus(b.dataset.status, b.dataset.next)
+  if (ordersList) {
+    const showDone = orders.filter(
+      o => o.status !== 'done' ||
+           recentlyDone.has(String(o.id))
     );
+
+    ordersList.innerHTML = showDone.length
+      ? showDone.map(orderHTML).join('')
+      : '<p class="muted">Keine Bestellungen vorhanden.</p>';
+
+    ordersList.querySelectorAll('[data-status]').forEach(button => {
+      button.addEventListener('click', () => {
+        setStatus(button.dataset.status, button.dataset.next);
+      });
+    });
+  }
+
+  // =========================
+  // LÄUFERLISTE
+  // =========================
+  const runnerList = $('runnerList');
+
+  if (!runnerList) {
+    console.error('HTML-Element runnerList wurde nicht gefunden.');
+    return;
+  }
+
+  const ready = orders.filter(o => {
+    const status = String(o.status || '')
+      .trim()
+      .toLowerCase();
+
+    const erledigt = [
+      'done',
+      'erledigt',
+      'fertig',
+      'abgeschlossen'
+    ].includes(status);
+
+    return erledigt && !o.delivered_at;
   });
 
-  console.log('Bestellungen für Läufer:', orders);
-  // Läuferliste: fertig, aber noch nicht ausgeliefert
-  const ready = orders.filter(
-    o => o.status === 'done' && !o.delivered_at
-  );
-
-  const runnerList = $('runnerList');
-  if (!runnerList) return;
+  console.log('Alle Bestellungen:', orders);
+  console.log('Fertige Bestellungen für Läufer:', ready);
 
   runnerList.innerHTML = ready.length
     ? ready.map(o => `
         <article class="order">
-          <h3>Bestellung #${esc(String(o.order_no))}</h3>
-          <p><strong>Tisch ${esc(String(o.table_number))}</strong></p>
+          <h3>Bestellung #${esc(String(o.order_no ?? o.id))}</h3>
+          <p><strong>Tisch ${esc(String(o.table_number ?? o.table_no ?? '?'))}</strong></p>
+
           <ul>
-            ${o.order_items.map(i =>
-              `<li>${i.quantity} × ${esc(i.name_snapshot)}</li>`
-            ).join('')}
+            ${(o.order_items || []).map(i => `
+              <li>
+                ${esc(String(i.quantity))} ×
+                ${esc(String(i.name_snapshot || i.name || 'Artikel'))}
+              </li>
+            `).join('')}
           </ul>
 
-<button type="button"
-  class="warn"
-  data-deliver="${esc(String(o.id))}">
-  Ausgeliefert
-</button>
-
+          <button
+            type="button"
+            class="warn"
+            data-deliver="${esc(String(o.id))}">
+            Ausgeliefert
+          </button>
         </article>
       `).join('')
     : '<p class="muted">Keine fertigen Bestellungen zum Ausliefern.</p>';
 
-  runnerList.querySelectorAll('[data-deliver]').forEach(b => {
-    b.addEventListener('click', () =>
-      markOrderDelivered(b.dataset.deliver)
-    );
+  runnerList.querySelectorAll('[data-deliver]').forEach(button => {
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+
+      try {
+        await markOrderDelivered(button.dataset.deliver);
+        await refreshOrders();
+      } catch (e) {
+        button.disabled = false;
+        say('Ausliefern fehlgeschlagen: ' + e.message, true);
+      }
+    });
   });
 }
-
 
 async function markOrderDelivered(id) {
   try {
