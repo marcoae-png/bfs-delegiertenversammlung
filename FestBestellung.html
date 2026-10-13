@@ -167,6 +167,38 @@ header .actions {
   box-sizing: border-box;
 }
 
+#ordersView .kitchen-item-essen {
+  background: #fff0b3;
+  color: #594000;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 6px 0;
+}
+
+#ordersView .kitchen-item-getraenke {
+  background: #cde8ff;
+  color: #084b7a;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 6px 0;
+}
+
+#ordersView .kitchen-item-dessert {
+  background: #eadcff;
+  color: #512b85;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 6px 0;
+}
+
+#ordersView .kitchen-item-sonstiges {
+  background: #f0f0f0;
+  color: #333333;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 6px 0;
+}
+
 
 
 </style>
@@ -490,13 +522,14 @@ async function submitOrder(){if(!cart.size)return;const table=Number($('tableNum
 
 
 
+  
 async function refreshOrders() {
   if (!sb || !profile) return;
 
   try {
     const { data, error } = await sb
       .from('orders')
-      .select('id,table_no,table_number,status,payment_method,payment_status,total,created_at,delivered_at,order_items(id,name_snapshot,name,quantity,unit_price,line_total)')
+      .select('id,table_no,table_number,status,payment_method,payment_status,total,created_at,delivered_at,order_items(id,name_snapshot,name,category,quantity,unit_price,line_total)')
       .order('created_at', { ascending: false })
       .limit(150);
 
@@ -580,7 +613,90 @@ autoRefreshOrders();
 
 
 
-function orderHTML(o){const status=o.status==='new'?'Neu':o.status==='in_progress'?'In Arbeit':'Erledigt';const next=o.status==='new'?'in_progress':'done';const paymentLabel=o.payment_method==='twint'?'TWINT':'Bar';return `<article class="order ${o.status==='in_progress'?'progress':''} ${o.status==='done'?'done':''}" data-order="${o.id}"><div class="order-top"><div><strong>Bestellung #${o.order_no}</strong> · Tisch ${o.table_number}<div class="muted">${new Date(o.created_at).toLocaleString('de-CH',{dateStyle:'short',timeStyle:'short'})}</div></div><div class="actions"><span class="pill ${o.status==='in_progress'?'orange':o.status==='done'?'green':''}">${status}</span><span class="pill">Zahlungsart: ${paymentLabel}</span><strong>${money(o.total)}</strong></div></div><ul>${(o.order_items||[]).map(i=>`<li>${i.quantity} × ${esc(i.name_snapshot)} <span class="muted">(${money(i.line_total)})</span></li>`).join('')}</ul><div class="actions">${o.status!=='done'?`<button type="button" data-status="${o.id}" data-next="${next}" class="${next==='done'?'warn':''}">${o.status==='new'?'1. Klick – In Arbeit':'2. Klick – Erledigt'}</button>`:'<span class="muted">Abgeschlossen</span>'}</div></article>`;}
+
+function orderHTML(o) {
+  const status =
+    o.status === 'new' ? 'Neu' :
+    o.status === 'in_progress' ? 'In Arbeit' :
+    'Erledigt';
+
+  const next = o.status === 'new' ? 'in_progress' : 'done';
+  const paymentLabel = o.payment_method === 'twint' ? 'TWINT' : 'Bar';
+
+  // Artikel anhand ihrer Kategorie einfärben
+  function artikelKlasse(i) {
+    const kategorie = String(i.category || i.category_snapshot || '')
+      .trim()
+      .toLowerCase();
+
+    if (kategorie === 'essen' || kategorie.includes('food')) {
+      return 'kitchen-item-essen';
+    }
+
+    if (
+      kategorie === 'getränke' ||
+      kategorie === 'getraenke' ||
+      kategorie.includes('drink')
+    ) {
+      return 'kitchen-item-getraenke';
+    }
+
+    if (kategorie === 'dessert') {
+      return 'kitchen-item-dessert';
+    }
+
+    return 'kitchen-item-sonstiges';
+  }
+
+  return `
+    <article
+      class="order ${o.status === 'in_progress' ? 'progress' : ''} ${o.status === 'done' ? 'done' : ''}"
+      data-order="${esc(String(o.id))}"
+    >
+      <div class="order-top">
+        <div>
+          <strong>Bestellung #${esc(String(o.order_no ?? o.id))}</strong>
+          · Tisch ${esc(String(o.table_number ?? '?'))}
+          <div class="muted">
+            ${new Date(o.created_at).toLocaleString('de-CH', {
+              dateStyle: 'short',
+              timeStyle: 'short'
+            })}
+          </div>
+        </div>
+
+        <div class="actions">
+          <span class="pill ${o.status === 'in_progress' ? 'orange' : o.status === 'done' ? 'green' : ''}">
+            ${status}
+          </span>
+          <span class="pill">Zahlungsart: ${paymentLabel}</span>
+          <strong>${money(o.total)}</strong>
+        </div>
+      </div>
+
+      <ul>
+        ${(o.order_items || []).map(i => `
+          <li class="${artikelKlasse(i)}">
+            <strong>${esc(String(i.quantity))} × ${esc(String(i.name_snapshot || i.name || 'Artikel'))}</strong>
+            <span class="muted">(${money(i.line_total)})</span>
+          </li>
+        `).join('')}
+      </ul>
+
+      <div class="actions">
+        ${o.status !== 'done'
+          ? `<button
+                type="button"
+                data-status="${esc(String(o.id))}"
+                data-next="${next}"
+                class="${next === 'done' ? 'warn' : ''}"
+              >${o.status === 'new' ? '1. Klick – In Arbeit' : '2. Klick – Erledigt'}</button>`
+          : '<span class="muted">Abgeschlossen</span>'
+        }
+      </div>
+    </article>
+  `;
+}
 
   
 
