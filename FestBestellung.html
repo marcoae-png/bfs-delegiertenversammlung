@@ -305,13 +305,11 @@ async function refreshOrders() {
   if (!sb || !profile) return;
 
   try {
-
-const { data, error } = await sb
-  .from('orders')
-  .select('id,table_no,table_number,status,payment_method,payment_status,total,created_at,delivered_at,order_items(id,name_snapshot,name,quantity,unit_price,line_total)')
-  .order('created_at', { ascending: false })
-  .limit(150);
-
+    const { data, error } = await sb
+      .from('orders')
+      .select('id,table_no,table_number,status,payment_method,payment_status,total,created_at,delivered_at,order_items(id,name_snapshot,name,quantity,unit_price,line_total)')
+      .order('created_at', { ascending: false })
+      .limit(150);
 
     if (error) throw error;
 
@@ -319,6 +317,7 @@ const { data, error } = await sb
       ...o,
       order_no: o.order_no ?? o.id,
       table_number: o.table_number ?? o.table_no,
+
       status: ({
         'Neu': 'new',
         'In Arbeit': 'in_progress',
@@ -327,9 +326,12 @@ const { data, error } = await sb
         'in_progress': 'in_progress',
         'done': 'done'
       })[o.status] || 'new',
+
       payment_method:
-        String(o.payment_method).toLowerCase() === 'twint'
-          ? 'twint' : 'cash',
+        String(o.payment_method || '').toLowerCase() === 'twint'
+          ? 'twint'
+          : 'cash',
+
       order_items: (o.order_items || []).map(i => ({
         ...i,
         name_snapshot: i.name_snapshot || i.name || 'Artikel',
@@ -338,42 +340,8 @@ const { data, error } = await sb
       }))
     }));
 
+    // Küchenliste und Läuferliste aktualisieren
     renderOrders();
-
-    // Fertige, noch nicht ausgelieferte Bestellungen für den Läufer
-
-const ready = orders.filter(o =>
-  ['done', 'Erledigt'].includes(o.status) &&
-  !o.delivered_at
-);
-
-    const liste = $('runnerList');
-
-    if (liste) {
-      liste.innerHTML = bereit.length
-        ? bereit.map(o => `
-            <article class="order">
-              <h3>Bestellung #${esc(String(o.order_no))}</h3>
-              <p><strong>Tisch ${esc(String(o.table_number))}</strong></p>
-              <ul>
-                ${o.order_items.map(i =>
-                  `<li>${i.quantity} × ${esc(i.name_snapshot)}</li>`
-                ).join('')}
-              </ul>
-              <button type="button"
-                data-deliver="${esc(String(o.id))}">
-                Ausgeliefert
-              </button>
-            </article>
-          `).join('')
-        : '<p class="muted">Keine fertigen Bestellungen zum Ausliefern.</p>';
-
-      liste.querySelectorAll('[data-deliver]').forEach(button => {
-        button.addEventListener('click', async () => {
-          await markOrderDelivered(button.dataset.deliver);
-        });
-      });
-    }
 
   } catch (e) {
     say('Bestellungen konnten nicht geladen werden: ' + e.message, true);
