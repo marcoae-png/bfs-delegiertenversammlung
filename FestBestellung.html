@@ -360,6 +360,12 @@ async function refreshOrders() {
 }
 
 
+document.getElementById('refreshRunnerBtn')
+  ?.addEventListener('click', () => {
+    console.log('Läuferliste aktualisieren geklickt');
+    refreshOrders();
+  });
+
 
 
 
