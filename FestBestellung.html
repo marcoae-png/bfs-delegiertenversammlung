@@ -399,61 +399,16 @@ function renderOrders() {
   }
 
   const ready = orders.filter(o => {
-    const status = String(o.status || '')
-      .trim()
-      .toLowerCase();
+    const status = String(o.status || '').trim().toLowerCase();
 
-    const erledigt = [
-      'done',
-      'erledigt',
-      'fertig',
-      'abgeschlossen'
-    ].includes(status);
-
-    return erledigt && !o.delivered_at;
+    return (
+      ['done', 'erledigt', 'fertig', 'abgeschlossen'].includes(status) &&
+      !o.delivered_at
+    );
   });
 
-
-console.table(orders.map(o => ({
-  id: o.id,
-  tisch: o.table_number,
-  status: o.status,
-  ausgeliefert: o.delivered_at
-})));
-
-
-
-runnerList.innerHTML = ready.length
-  ? ready.map(o => `
-      <article class="order">
-        <h3>Bestellung #${esc(String(o.order_no ?? o.id))}</h3>
-        <p><strong>Tisch ${esc(String(o.table_number ?? o.table_no ?? '?'))}</strong></p>
-        <ul>
-          ${(o.order_items || []).map(i => `
-            <li>${esc(String(i.quantity))} × ${esc(String(i.name_snapshot || i.name || 'Artikel'))}</li>
-          `).join('')}
-        </ul>
-        <button
-          type="button"
-          class="warn"
-          data-deliver="${esc(String(o.id))}">
-          Ausgeliefert
-        </button>
-      </article>
-    `).join('')
-  : '<p class="muted">Keine fertigen Bestellungen zum Ausliefern.</p>';
-
-// Debug-Ausgaben – erst nach dem vollständigen HTML-Block
-console.log('Läufer-HTML:', runnerList.innerHTML);
-console.log('Läufer-Element sichtbar:', runnerList.offsetParent !== null);
-console.log(
-  'Anzahl Läuferkarten:',
-  runnerList.querySelectorAll('article.order').length
-);
-console.log('Fertige Bestellungen für Läufer:', ready);
-
-
-  
+  runnerList.innerHTML = ready.length
+    ? ready.map(o => `
         <article class="order">
           <h3>Bestellung #${esc(String(o.order_no ?? o.id))}</h3>
           <p><strong>Tisch ${esc(String(o.table_number ?? o.table_no ?? '?'))}</strong></p>
@@ -477,21 +432,35 @@ console.log('Fertige Bestellungen für Läufer:', ready);
       `).join('')
     : '<p class="muted">Keine fertigen Bestellungen zum Ausliefern.</p>';
 
+  // Auslieferungs-Knöpfe aktivieren
   runnerList.querySelectorAll('[data-deliver]').forEach(button => {
     button.addEventListener('click', async () => {
       button.disabled = true;
 
       try {
         await markOrderDelivered(button.dataset.deliver);
-        await refreshOrders();
       } catch (e) {
         button.disabled = false;
-        say('Ausliefern fehlgeschlagen: ' + e.message, true);
+        say('Auslieferung fehlgeschlagen: ' + e.message, true);
       }
     });
   });
+
+  console.log('Fertige Bestellungen für Läufer:', ready.length);
+  console.log(
+    'Angezeigte Läuferkarten:',
+    runnerList.querySelectorAll('article.order').length
+  );
 }
 
+
+
+
+
+
+
+
+  
 async function markOrderDelivered(id) {
   try {
     const { error } = await sb.rpc('mark_order_delivered', {
