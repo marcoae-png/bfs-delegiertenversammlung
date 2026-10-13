@@ -167,9 +167,35 @@ function firstTab(){return 'service';}
 
 
 
-function allowed(tab) {
-  return ['service', 'orders', 'runner', 'closing', 'admin'].includes(tab);
+
+function renderTabs() {
+  const all = [
+    ['service', 'Neue Bestellung'],
+    ['orders', 'Küche'],
+    ['runner', 'Läufer'],
+    ['closing', 'Tagesabschluss'],
+    ['admin', 'Menü verwalten']
+  ];
+
+  $('tabs').innerHTML = all
+    .filter(([t]) => allowed(t))
+    .map(([t, n]) =>
+      `<button type="button" data-tab="${t}" class="${t === activeTab ? 'active' : ''}">${n}</button>`
+    )
+    .join('');
+
+  $('tabs').querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => showTab(b.dataset.tab));
+  });
+
+  $('tableNumber').innerHTML = Array.from(
+    { length: 30 },
+    (_, i) => `<option value="${i + 1}">Tisch ${i + 1}</option>`
+  ).join('');
+
+  $('closingDate').value = new Date().toLocaleDateString('en-CA');
 }
+
 
 
 
