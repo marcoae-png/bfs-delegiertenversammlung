@@ -422,18 +422,38 @@ console.table(orders.map(o => ({
 })));
 
 
-  runnerList.innerHTML = ready.length
 
+runnerList.innerHTML = ready.length
+  ? ready.map(o => `
+      <article class="order">
+        <h3>Bestellung #${esc(String(o.order_no ?? o.id))}</h3>
+        <p><strong>Tisch ${esc(String(o.table_number ?? o.table_no ?? '?'))}</strong></p>
+        <ul>
+          ${(o.order_items || []).map(i => `
+            <li>${esc(String(i.quantity))} × ${esc(String(i.name_snapshot || i.name || 'Artikel'))}</li>
+          `).join('')}
+        </ul>
+        <button
+          type="button"
+          class="warn"
+          data-deliver="${esc(String(o.id))}">
+          Ausgeliefert
+        </button>
+      </article>
+    `).join('')
+  : '<p class="muted">Keine fertigen Bestellungen zum Ausliefern.</p>';
+
+// Debug-Ausgaben – erst nach dem vollständigen HTML-Block
 console.log('Läufer-HTML:', runnerList.innerHTML);
 console.log('Läufer-Element sichtbar:', runnerList.offsetParent !== null);
-console.log('Anzahl Läuferkarten:', runnerList.querySelectorAll('.order').length);
- console.log('Fertige Bestellungen für Läufer:', ready); 
-  console.log(
-  'Anzahl angezeigter Karten:',
+console.log(
+  'Anzahl Läuferkarten:',
   runnerList.querySelectorAll('article.order').length
 );
-    
-    ? ready.map(o => `
+console.log('Fertige Bestellungen für Läufer:', ready);
+
+
+  
         <article class="order">
           <h3>Bestellung #${esc(String(o.order_no ?? o.id))}</h3>
           <p><strong>Tisch ${esc(String(o.table_number ?? o.table_no ?? '?'))}</strong></p>
