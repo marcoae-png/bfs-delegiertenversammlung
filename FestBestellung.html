@@ -141,14 +141,30 @@ header .actions {
   font-size: 1.4rem;
 }
 
+
 #ordersView .order button {
-  width: 100%;
-  max-width: 100%;
+  display: block;
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 85px;
+  padding: 22px 30px;
+  font-size: 24px;
+  font-weight: 700;
   box-sizing: border-box;
   white-space: normal;
-  min-height: 60px;
-  padding: 16px 24px;
-  font-size: 20px;
+}
+
+#ordersView .order .actions,
+#ordersView .order .actions > div {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+#ordersView .order {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
 }
 
 
