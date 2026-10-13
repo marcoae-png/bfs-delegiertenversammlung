@@ -341,9 +341,11 @@ const { data, error } = await sb
     renderOrders();
 
     // Fertige, noch nicht ausgelieferte Bestellungen für den Läufer
-    const bereit = orders.filter(
-      o => o.status === 'done' && !o.delivered_at
-    );
+
+const ready = orders.filter(o =>
+  ['done', 'Erledigt'].includes(o.status) &&
+  !o.delivered_at
+);
 
     const liste = $('runnerList');
 
