@@ -286,11 +286,13 @@ async function refreshOrders() {
   if (!sb || !profile) return;
 
   try {
-    const { data, error } = await sb
-      .from('orders')
-      .select('id,table_no,table_number,status,payment_method,payment_status,total,created_at,delivered_at,order_items(id,name_snapshot,name,quantity,unit_price,line_total)')
-      .order('created_at', { ascending: false })
-      .limit(150);
+
+const { data, error } = await sb
+  .from('orders')
+  .select('id,table_no,table_number,status,payment_method,payment_status,total,created_at,delivered_at,order_items(id,name_snapshot,name,quantity,unit_price,line_total)')
+  .order('created_at', { ascending: false })
+  .limit(150);
+
 
     if (error) throw error;
 
@@ -362,8 +364,77 @@ async function refreshOrders() {
 
 
 function orderHTML(o){const status=o.status==='new'?'Neu':o.status==='in_progress'?'In Arbeit':'Erledigt';const next=o.status==='new'?'in_progress':'done';const paymentLabel=o.payment_method==='twint'?'TWINT':'Bar';return `<article class="order ${o.status==='in_progress'?'progress':''} ${o.status==='done'?'done':''}" data-order="${o.id}"><div class="order-top"><div><strong>Bestellung #${o.order_no}</strong> · Tisch ${o.table_number}<div class="muted">${new Date(o.created_at).toLocaleString('de-CH',{dateStyle:'short',timeStyle:'short'})}</div></div><div class="actions"><span class="pill ${o.status==='in_progress'?'orange':o.status==='done'?'green':''}">${status}</span><span class="pill">Zahlungsart: ${paymentLabel}</span><strong>${money(o.total)}</strong></div></div><ul>${(o.order_items||[]).map(i=>`<li>${i.quantity} × ${esc(i.name_snapshot)} <span class="muted">(${money(i.line_total)})</span></li>`).join('')}</ul><div class="actions">${o.status!=='done'?`<button type="button" data-status="${o.id}" data-next="${next}" class="${next==='done'?'warn':''}">${o.status==='new'?'1. Klick – In Arbeit':'2. Klick – Erledigt'}</button>`:'<span class="muted">Abgeschlossen</span>'}</div></article>`;}
-function renderOrders(){const showDone=orders.filter(o=>o.status!=='done'||recentlyDone.has(String(o.id)));$('ordersList').innerHTML=showDone.length?showDone.map(orderHTML).join(''):'<p class="muted">Keine Bestellungen vorhanden.</p>';$('ordersList').querySelectorAll('[data-status]').forEach(b=>b.addEventListener('click',()=>setStatus(b.dataset.status,b.dataset.next)));}
-async function setStatus(id,status){try{const {error}=await sb.rpc('set_order_status',{p_order_id:Number(id),p_status:status});if(error)throw error;if(status==='done'){recentlyDone.add(String(id));await refreshOrders();setTimeout(()=>{recentlyDone.delete(String(id));renderOrders();},2000);}else await refreshOrders();}catch(e){say('Küchenstatus konnte nicht geändert werden: '+e.message,true);}}
+
+  
+
+function renderOrders() {
+  // Küchenliste
+  const showDone = orders.filter(
+    o => o.status !== 'done' || recentlyDone.has(String(o.id))
+  );
+
+  $('ordersList').innerHTML = showDone.length
+    ? showDone.map(orderHTML).join('')
+    : '<p class="muted">Keine Bestellungen vorhanden.</p>';
+
+  $('ordersList').querySelectorAll('[data-status]').forEach(b => {
+    b.addEventListener('click', () =>
+      setStatus(b.dataset.status, b.dataset.next)
+    );
+  });
+
+  // Läuferliste: fertig, aber noch nicht ausgeliefert
+  const ready = orders.filter(
+    o => o.status === 'done' && !o.delivered_at
+  );
+
+  const runnerList = $('runnerList');
+  if (!runnerList) return;
+
+  runnerList.innerHTML = ready.length
+    ? ready.map(o => `
+        <article class="order">
+          <h3>Bestellung #${esc(String(o.order_no))}</h3>
+          <p><strong>Tisch ${esc(String(o.table_number))}</strong></p>
+          <ul>
+            ${o.order_items.map(i =>
+              `<li>${i.quantity} × ${esc(i.name_snapshot)}</li>`
+            ).join('')}
+          </ul>
+          <button type="button" data-deliver="${esc(String(o.id))}">
+            Ausgeliefert
+          </button>
+        </article>
+      `).join('')
+    : '<p class="muted">Keine fertigen Bestellungen zum Ausliefern.</p>';
+
+  runnerList.querySelectorAll('[data-deliver]').forEach(b => {
+    b.addEventListener('click', () =>
+      markOrderDelivered(b.dataset.deliver)
+    );
+  });
+}
+
+
+async function markOrderDelivered(id) {
+  try {
+    const { error } = await sb.rpc('mark_order_delivered', {
+      p_order_id: Number(id)
+    });
+
+    if (error) throw error;
+
+    await refreshOrders();
+    say('Bestellung wurde als ausgeliefert markiert.');
+  } catch (e) {
+    say('Auslieferung fehlgeschlagen: ' + e.message, true);
+  }
+}
+
+
+  
+  
+  async function setStatus(id,status){try{const {error}=await sb.rpc('set_order_status',{p_order_id:Number(id),p_status:status});if(error)throw error;if(status==='done'){recentlyDone.add(String(id));await refreshOrders();setTimeout(()=>{recentlyDone.delete(String(id));renderOrders();},2000);}else await refreshOrders();}catch(e){say('Küchenstatus konnte nicht geändert werden: '+e.message,true);}}
 async function addMenuItem(){const name=$('menuName').value.trim(),category=$('menuCategory').value,price=Number($('menuPrice').value);if(!name||!Number.isFinite(price)||price<0){say('Bitte Name und gültigen Preis erfassen.',true);return;}try{const {error}=await sb.from('menu_items').insert({name,category,price,active:true});if(error)throw error;$('menuName').value='';$('menuPrice').value='';await loadMenu();await loadAdmin();say('Artikel hinzugefügt.');}catch(e){say('Artikel konnte nicht gespeichert werden: '+e.message,true);}}
 async function loadAdmin(){try{const {data,error}=await sb.from('menu_items').select('id,name,category,price,active').order('category').order('name');if(error)throw error;$('adminMenuList').innerHTML=`<table class="table"><thead><tr><th>Artikel</th><th>Kategorie</th><th>Preis</th><th>Aktiv</th><th></th></tr></thead><tbody>${(data||[]).map(m=>`<tr><td>${esc(m.name)}</td><td>${esc(m.category)}</td><td>${money(m.price)}</td><td>${m.active?'Ja':'Nein'}</td><td><button class="secondary" data-toggle-menu="${m.id}" data-active="${m.active}">${m.active?'Deaktivieren':'Aktivieren'}</button></td></tr>`).join('')}</tbody></table>`;$('adminMenuList').querySelectorAll('[data-toggle-menu]').forEach(b=>b.addEventListener('click',()=>toggleMenu(b.dataset.toggleMenu,b.dataset.active==='true')));}catch(e){say('Administration konnte nicht geladen werden: '+e.message,true);}}
 async function toggleMenu(id,active){try{const {error}=await sb.from('menu_items').update({active:!active}).eq('id',id);if(error)throw error;await loadMenu();await loadAdmin();}catch(e){say('Menüartikel konnte nicht geändert werden: '+e.message,true);}}
