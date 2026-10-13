@@ -413,8 +413,14 @@ function renderOrders() {
     return erledigt && !o.delivered_at;
   });
 
-  console.log('Alle Bestellungen:', orders);
-  console.log('Fertige Bestellungen für Läufer:', ready);
+
+console.table(orders.map(o => ({
+  id: o.id,
+  tisch: o.table_number,
+  status: o.status,
+  ausgeliefert: o.delivered_at
+})));
+
 
   runnerList.innerHTML = ready.length
     ? ready.map(o => `
