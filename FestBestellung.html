@@ -360,11 +360,47 @@ async function refreshOrders() {
 }
 
 
-document.getElementById('refreshRunnerBtn')
-  ?.addEventListener('click', () => {
-    console.log('Läuferliste aktualisieren geklickt');
-    refreshOrders();
-  });
+
+/* Manuelles Aktualisieren für den Läufer */
+document.addEventListener('click', event => {
+  const button = event.target.closest('#refreshRunnerBtn');
+  if (!button) return;
+
+  refreshOrders();
+});
+
+/* Automatische Aktualisierung für Küche und Läufer */
+let orderRefreshTimer = null;
+let orderRefreshRunning = false;
+
+
+/* Küche und Läufer auf jedem geöffneten Gerät automatisch aktualisieren */
+let orderRefreshTimer = null;
+let orderRefreshRunning = false;
+
+
+  
+async function autoRefreshOrders() {
+  if (orderRefreshRunning || !sb || !profile) return;
+
+  orderRefreshRunning = true;
+
+  try {
+    await refreshOrders();
+  } finally {
+    orderRefreshRunning = false;
+  }
+}
+
+if (orderRefreshTimer !== null) {
+  clearInterval(orderRefreshTimer);
+}
+
+orderRefreshTimer = setInterval(autoRefreshOrders, 3000);
+
+// Beim Start sofort laden
+autoRefreshOrders();
+
 
 
 
