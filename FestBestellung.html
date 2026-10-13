@@ -478,9 +478,48 @@ async function markOrderDelivered(id) {
 
 
   
+
+async function setStatus(id, status) {
+  try {
+    const { error } = await sb.rpc('set_order_status', {
+      p_order_id: Number(id),
+      p_status: status
+    });
+
+    if (error) throw error;
+
+    console.log('Küchenstatus geändert:', {
+      id: id,
+      neuerStatus: status
+    });
+
+    if (status === 'done') {
+      recentlyDone.add(String(id));
+    }
+
+    // Küche und Läufer mit den aktuellen Daten aktualisieren
+    await refreshOrders();
+
+    if (status === 'done') {
+      setTimeout(() => {
+        recentlyDone.delete(String(id));
+        renderOrders();
+      }, 2000);
+    }
+
+  } catch (e) {
+    say('Küchenstatus konnte nicht geändert werden: ' + e.message, true);
+    console.error('Fehler beim Ändern des Küchenstatus:', e);
+  }
+}
+
+
+
+
+
   
-  async function setStatus(id,status){try{const {error}=await sb.rpc('set_order_status',{p_order_id:Number(id),p_status:status});if(error)throw error;if(status==='done'){recentlyDone.add(String(id));await refreshOrders();setTimeout(()=>{recentlyDone.delete(String(id));renderOrders();},2000);}else await refreshOrders();}catch(e){say('Küchenstatus konnte nicht geändert werden: '+e.message,true);}}
-async function addMenuItem(){const name=$('menuName').value.trim(),category=$('menuCategory').value,price=Number($('menuPrice').value);if(!name||!Number.isFinite(price)||price<0){say('Bitte Name und gültigen Preis erfassen.',true);return;}try{const {error}=await sb.from('menu_items').insert({name,category,price,active:true});if(error)throw error;$('menuName').value='';$('menuPrice').value='';await loadMenu();await loadAdmin();say('Artikel hinzugefügt.');}catch(e){say('Artikel konnte nicht gespeichert werden: '+e.message,true);}}
+
+  async function addMenuItem(){const name=$('menuName').value.trim(),category=$('menuCategory').value,price=Number($('menuPrice').value);if(!name||!Number.isFinite(price)||price<0){say('Bitte Name und gültigen Preis erfassen.',true);return;}try{const {error}=await sb.from('menu_items').insert({name,category,price,active:true});if(error)throw error;$('menuName').value='';$('menuPrice').value='';await loadMenu();await loadAdmin();say('Artikel hinzugefügt.');}catch(e){say('Artikel konnte nicht gespeichert werden: '+e.message,true);}}
 async function loadAdmin(){try{const {data,error}=await sb.from('menu_items').select('id,name,category,price,active').order('category').order('name');if(error)throw error;$('adminMenuList').innerHTML=`<table class="table"><thead><tr><th>Artikel</th><th>Kategorie</th><th>Preis</th><th>Aktiv</th><th></th></tr></thead><tbody>${(data||[]).map(m=>`<tr><td>${esc(m.name)}</td><td>${esc(m.category)}</td><td>${money(m.price)}</td><td>${m.active?'Ja':'Nein'}</td><td><button class="secondary" data-toggle-menu="${m.id}" data-active="${m.active}">${m.active?'Deaktivieren':'Aktivieren'}</button></td></tr>`).join('')}</tbody></table>`;$('adminMenuList').querySelectorAll('[data-toggle-menu]').forEach(b=>b.addEventListener('click',()=>toggleMenu(b.dataset.toggleMenu,b.dataset.active==='true')));}catch(e){say('Administration konnte nicht geladen werden: '+e.message,true);}}
 async function toggleMenu(id,active){try{const {error}=await sb.from('menu_items').update({active:!active}).eq('id',id);if(error)throw error;await loadMenu();await loadAdmin();}catch(e){say('Menüartikel konnte nicht geändert werden: '+e.message,true);}}
 async function calculateClosing(){const date=$('closingDate').value;if(!date){say('Bitte ein Datum auswählen.',true);return null;}try{const {data,error}=await sb.rpc('get_day_summary',{p_business_date:date});if(error)throw error;const d=Array.isArray(data)?data[0]:data;if(!d)throw new Error('Keine Abrechnung erhalten.');$('closingSummary').innerHTML=`<div class="totals"><div class="totalbox">Umsatz Bestellungen<strong>${money(d.total_sales)}</strong></div><div class="totalbox">Bar bezahlt<strong>${money(d.cash_total)}</strong></div><div class="totalbox">TWINT bezahlt<strong>${money(d.twint_total)}</strong></div><div class="totalbox">Noch offen<strong>${money(d.open_amount)}</strong></div><div class="totalbox">Anzahl Bestellungen<strong>${Number(d.order_count||0)}</strong></div></div>`;return d;}catch(e){say('Abrechnung konnte nicht berechnet werden: '+e.message,true);return null;}}
