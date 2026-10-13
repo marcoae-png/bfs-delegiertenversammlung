@@ -5,17 +5,7 @@
 <title>FestBestellung</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#17211b;background:#f3f6f3;--green:#245c3b;--light:#e5eee8;--orange:#f3a22b;--red:#b52f2f}*{box-sizing:border-box}body{margin:0}header{background:var(--green);color:white;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}h1{font-size:1.35rem;margin:0}header small{opacity:.85}.wrap{max-width:1200px;margin:auto;padding:18px}.panel{background:white;border-radius:14px;padding:18px;margin:0 0 16px;box-shadow:0 2px 10px #17211b0d}.hidden{display:none!important}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}label{display:block;font-weight:650;font-size:.92rem;margin:0 0 6px}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;padding:11px;border:1px solid #cbd5cd;border-radius:8px;background:white}button{border:0;border-radius:9px;padding:11px 14px;background:var(--green);color:white;font-weight:700;cursor:pointer}button.secondary{background:#e8eee9;color:#183b27}
-  button.warn {
-  background: #f39c12;
-  color: #ffffff;
-  border: 1px solid #e08e0b;
-}
-  
-  button.danger{background:var(--red)}button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tabs button[data-tab="service"]{background:#1769aa;color:#fff}.tabs button[data-tab="service"]:hover{background:#12558a}.tabs button[data-tab="orders"]{background:#7b3fa1;color:#fff}.tabs button[data-tab="orders"]:hover{background:#633180}.tabs button.active{outline:3px solid #b6d4c0;outline-offset:2px}
-.muted{color:#657168}
-  
-  .msg{padding:10px 12px;border-radius:8px;margin:10px 0;background:#e9f1eb}.msg.error{background:#fde8e8;color:#842323}.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}.item{border:1px solid #d8e1da;border-radius:10px;padding:14px;background:#fff;text-align:left;color:#17211b;cursor:pointer;transition:border-color .12s,background .12s,transform .08s;min-height:125px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start}.item:hover{border-color:var(--green);background:#f1f7f2}.item:active{transform:scale(.98)}.item:focus-visible{outline:3px solid #8ab99a;outline-offset:2px}.item.selected{border:2px solid var(--green);background:#eaf4ed;padding:13px}.item h3{font-size:1rem;margin:0 0 6px}.price{font-weight:800;color:var(--green)}.tile-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;margin-top:auto;padding-top:12px}.cart-count{font-size:.85rem;font-weight:800;background:#e5eee8;border-radius:20px;padding:5px 8px}.tile-hint{font-size:.78rem;color:#657168}.order{border:1px solid #d7dfd9;border-left:7px solid #a5b5aa;border-radius:10px;padding:13px;margin:10px 0}.order.progress{border-left-color:var(--orange);background:#fff8e9}.order.done{border-left-color:#26804a;background:#e8f7ed}.order-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#edf1ed;font-size:.82rem;font-weight:700}.pill.orange{background:#ffedc8}.pill.green{background:#d9f1e0}.pill.red{background:#ffe1e1}.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;border-bottom:1px solid #e3e9e4;padding:9px 7px;vertical-align:top}.right{text-align:right}.big{font-size:1.35rem;font-weight:800}.foot{font-size:.82rem;color:#66716a;margin-top:12px}.statusline{font-size:.9rem}.section-title{margin:0 0 12px;font-size:1.1rem}.totals{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.totalbox{padding:14px;background:#f3f7f4;border-radius:10px}.totalbox strong{display:block;font-size:1.2rem;margin-top:4px}@media(max-width:600px){.wrap{padding:10px}.panel{padding:13px}header{padding:14px}}
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#17211b;background:#f3f6f3;--green:#245c3b;--light:#e5eee8;--orange:#f3a22b;--red:#b52f2f}*{box-sizing:border-box}body{margin:0}header{background:var(--green);color:white;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}h1{font-size:1.35rem;margin:0}header small{opacity:.85}.wrap{max-width:1200px;margin:auto;padding:18px}.panel{background:white;border-radius:14px;padding:18px;margin:0 0 16px;box-shadow:0 2px 10px #17211b0d}.hidden{display:none!important}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}label{display:block;font-weight:650;font-size:.92rem;margin:0 0 6px}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;padding:11px;border:1px solid #cbd5cd;border-radius:8px;background:white}button{border:0;border-radius:9px;padding:11px 14px;background:var(--green);color:white;font-weight:700;cursor:pointer}button.secondary{background:#e8eee9;color:#183b27}button.warn{background:var(--orange);color:#2a200d}button.danger{background:var(--red)}button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tabs button[data-tab="service"]{background:#1769aa;color:#fff}.tabs button[data-tab="service"]:hover{background:#12558a}.tabs button[data-tab="orders"]{background:#7b3fa1;color:#fff}.tabs button[data-tab="orders"]:hover{background:#633180}.tabs button.active{outline:3px solid #b6d4c0;outline-offset:2px}.muted{color:#657168}.msg{padding:10px 12px;border-radius:8px;margin:10px 0;background:#e9f1eb}.msg.error{background:#fde8e8;color:#842323}.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}.item{border:1px solid #d8e1da;border-radius:10px;padding:14px;background:#fff;text-align:left;color:#17211b;cursor:pointer;transition:border-color .12s,background .12s,transform .08s;min-height:125px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start}.item:hover{border-color:var(--green);background:#f1f7f2}.item:active{transform:scale(.98)}.item:focus-visible{outline:3px solid #8ab99a;outline-offset:2px}.item.selected{border:2px solid var(--green);background:#eaf4ed;padding:13px}.item h3{font-size:1rem;margin:0 0 6px}.price{font-weight:800;color:var(--green)}.tile-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;margin-top:auto;padding-top:12px}.cart-count{font-size:.85rem;font-weight:800;background:#e5eee8;border-radius:20px;padding:5px 8px}.tile-hint{font-size:.78rem;color:#657168}.order{border:1px solid #d7dfd9;border-left:7px solid #a5b5aa;border-radius:10px;padding:13px;margin:10px 0}.order.progress{border-left-color:var(--orange);background:#fff8e9}.order.done{border-left-color:#26804a;background:#e8f7ed}.order-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#edf1ed;font-size:.82rem;font-weight:700}.pill.orange{background:#ffedc8}.pill.green{background:#d9f1e0}.pill.red{background:#ffe1e1}.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;border-bottom:1px solid #e3e9e4;padding:9px 7px;vertical-align:top}.right{text-align:right}.big{font-size:1.35rem;font-weight:800}.foot{font-size:.82rem;color:#66716a;margin-top:12px}.statusline{font-size:.9rem}.section-title{margin:0 0 12px;font-size:1.1rem}.totals{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.totalbox{padding:14px;background:#f3f7f4;border-radius:10px}.totalbox strong{display:block;font-size:1.2rem;margin-top:4px}@media(max-width:600px){.wrap{padding:10px}.panel{padding:13px}header{padding:14px}}
 
 
 
@@ -63,7 +53,93 @@ header .actions {
 
 
 
+/* Passwortfeld mit eigenem Auge */
+.password-wrap {
+  position: relative;
+}
 
+.password-wrap input {
+  padding-right: 48px;
+}
+
+
+/* Eigenes Auge grösser darstellen */
+.password-wrap .password-toggle {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: auto;
+  margin: 0;
+  padding: 6px;
+  font-size: 28px;
+  line-height: 1;
+  background: transparent;
+  color: #17211b;
+  border: 0;
+  box-shadow: none;
+}
+
+
+/* Zusätzliches Browser-Auge in Edge ausblenden */
+#password::-ms-reveal,
+#password::-ms-clear {
+  display: none;
+}
+
+
+/* Küche: grössere und besser lesbare Bestellungen */
+#ordersView {
+  font-size: 18px;
+}
+
+#ordersView .order {
+  padding: 20px;
+  margin: 14px 0;
+  border-radius: 14px;
+}
+
+#ordersView .order h2,
+#ordersView .order h3 {
+  font-size: 1.4rem;
+}
+
+#ordersView .order button {
+  font-size: 18px;
+  padding: 14px 20px;
+  min-height: 50px;
+}
+
+#ordersView .pill {
+  font-size: 1rem;
+  padding: 7px 12px;
+}
+
+#ordersView .section-title {
+  font-size: 1.5rem;
+}
+
+
+/* Läufer: Tischnummer gross und gut sichtbar */
+#runnerView .order-top {
+  align-items: center;
+}
+
+#runnerView .order {
+  padding: 20px;
+}
+
+#runnerView .order strong,
+#runnerView .order .table-number {
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+#runnerView .order h2,
+#runnerView .order h3 {
+  font-size: 1.4rem;
+}
 
 
 
@@ -105,7 +181,25 @@ header .actions {
 <div class="grid"><div><label for="projectUrl">Supabase Project URL</label><input id="projectUrl" value="https://mkdsxgckckzxqaupilrp.supabase.co" placeholder="https://xxxxxxxx.supabase.co" autocomplete="url"></div><div><label for="anonKey">Public anon/publishable key</label><input id="anonKey" value="sb_publishable_dDoTEWtrcI8ulfVD4UiZZg_JsirepVu" placeholder="eyJ... oder sb_publishable_..." autocomplete="off"></div></div>
 <div class="actions" style="margin-top:12px"><button id="saveConfigBtn" type="button">Verbindung speichern</button><button id="testConfigBtn" class="secondary" type="button">Verbindung testen</button></div><p class="foot">URL und öffentlicher Key werden nach dem Speichern in diesem Browser gemerkt. Bestelldaten liegen zentral in Supabase und sind nach Anmeldung auf allen verbundenen Geräten verfügbar. Auf gemeinsam genutzten Geräten nach dem Einsatz abmelden.</p>
 </section>
-<section id="loginPanel" class="panel hidden"><h2 class="section-title">Anmelden</h2><div class="grid"><div><label for="email">E-Mail</label><input id="email" type="email" autocomplete="username"></div><div><label for="password">Passwort</label><input id="password" type="password" autocomplete="current-password"></div></div><div class="actions" style="margin-top:12px"><button id="loginBtn" type="button">Anmelden</button></div><p class="muted">Benutzerkonten werden im Supabase-Dashboard durch eine berechtigte Person erstellt.</p></section>
+<section id="loginPanel" class="panel hidden"><h2 class="section-title">Anmelden</h2><div class="grid"><div><label for="email">E-Mail</label><input id="email" type="email" autocomplete="username"></div><div><label for="password">Passwort</label>
+
+
+
+<div class="password-wrap">
+  <input id="password" type="password" autocomplete="current-password">
+  <button
+    id="togglePassword"
+    class="password-toggle"
+    type="button"
+    aria-label="Passwort anzeigen"
+    title="Passwort anzeigen">
+    👁
+  </button>
+</div>
+
+
+
+</div></div><div class="actions" style="margin-top:12px"><button id="loginBtn" type="button">Anmelden</button></div><p class="muted">Benutzerkonten werden im Supabase-Dashboard durch eine berechtigte Person erstellt.</p></section>
 <section id="appPanel" class="hidden">
 <div id="notice" class="msg hidden" role="status"></div>
 <nav class="tabs" id="tabs"></nav>
@@ -139,12 +233,73 @@ header .actions {
 
 
 
+<div class="order-top"><h2 class="section-title">Bestellungen</h2><div class="actions"><button id="refreshOrdersBtn" class="secondary" type="button">Aktualisieren</button></div></div><div id="ordersList"></div></section>
+
+
+
+<section id="runnerView" class="panel hidden">
+  <div class="order-top">
+    <h2 class="section-title">Läufer – bereit zur Auslieferung</h2>
+    <button id="refreshRunnerBtn" class="secondary" type="button">
+      Aktualisieren
+    </button>
+  </div>
+  <div id="runnerList"></div>
+</section>
 
 
 
 
 <section id="closingView" class="panel hidden"><h2 class="section-title">Tagesabschluss</h2><div class="grid"><div><label for="closingDate">Datum</label><input id="closingDate" type="date"></div><div><label for="closingNotes">Bemerkungen (optional)</label><input id="closingNotes" placeholder="z. B. Kasse übergeben"></div></div><div class="actions" style="margin-top:12px"><button id="previewClosingBtn" class="secondary" type="button">Abrechnung berechnen</button><button id="saveClosingBtn" type="button">Tagesabschluss speichern</button></div><div id="closingSummary" style="margin-top:14px"></div><div id="closingHistory" style="margin-top:18px"></div></section>
-<section id="adminView" class="panel hidden"><h2 class="section-title">Administration</h2><h3>Menüartikel</h3><div class="grid"><div><label for="menuName">Artikelname</label><input id="menuName" placeholder="z. B. Bratwurst"></div><div><label for="menuCategory">Kategorie</label><select id="menuCategory"><option>Essen</option><option>Getränke</option><option>Dessert</option><option>Sonstiges</option></select></div><div><label for="menuPrice">Preis in CHF</label><input id="menuPrice" type="number" min="0" step="0.05" placeholder="8.50"></div></div><div class="actions" style="margin:10px 0 18px"><button id="addMenuBtn" type="button">Artikel hinzufügen</button></div><div id="adminMenuList"></div></section>
+
+<section id="adminView" class="panel hidden">
+  <h2 class="section-title">Administration</h2>
+
+  <h3>Menüartikel</h3>
+
+  <div class="grid">
+    <div>
+      <label for="menuName">Artikelname</label>
+      <input id="menuName" placeholder="z. B. Bratwurst">
+    </div>
+
+    <div>
+      <label for="menuCategory">Kategorie</label>
+      <select id="menuCategory">
+        <option>Essen</option>
+        <option>Getränke</option>
+        <option>Dessert</option>
+        <option>Sonstiges</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="menuPrice">Preis in CHF</label>
+      <input id="menuPrice" type="number" min="0" step="0.05" placeholder="8.50">
+    </div>
+  </div>
+
+  <div class="actions" style="margin:10px 0 18px">
+    <button id="addMenuBtn" type="button">Artikel hinzufügen</button>
+  </div>
+
+  <div id="adminMenuList"></div>
+
+  <hr style="margin:28px 0;border:0;border-top:1px solid #d8e1da">
+
+  <h3>Bestellungen zurücksetzen</h3>
+  <p class="muted">
+    Löscht alle heutigen Bestellungen einschliesslich Positionen.
+    Menüartikel bleiben erhalten.
+  </p>
+
+  <button
+    type="button"
+    id="resetTodayOrdersBtn"
+    class="danger">
+    Heutige Bestellungen zurücksetzen
+  </button>
+
 </section>
 <div class="foot">FestBestellung · Bei vertraulichen Daten nur mit persönlichen Benutzerkonten und aktivierten Datenbankrichtlinien verwenden.</div>
 </main>
@@ -559,8 +714,77 @@ async function setStatus(id, status) {
   
 
   async function addMenuItem(){const name=$('menuName').value.trim(),category=$('menuCategory').value,price=Number($('menuPrice').value);if(!name||!Number.isFinite(price)||price<0){say('Bitte Name und gültigen Preis erfassen.',true);return;}try{const {error}=await sb.from('menu_items').insert({name,category,price,active:true});if(error)throw error;$('menuName').value='';$('menuPrice').value='';await loadMenu();await loadAdmin();say('Artikel hinzugefügt.');}catch(e){say('Artikel konnte nicht gespeichert werden: '+e.message,true);}}
-async function loadAdmin(){try{const {data,error}=await sb.from('menu_items').select('id,name,category,price,active').order('category').order('name');if(error)throw error;$('adminMenuList').innerHTML=`<table class="table"><thead><tr><th>Artikel</th><th>Kategorie</th><th>Preis</th><th>Aktiv</th><th></th></tr></thead><tbody>${(data||[]).map(m=>`<tr><td>${esc(m.name)}</td><td>${esc(m.category)}</td><td>${money(m.price)}</td><td>${m.active?'Ja':'Nein'}</td><td><button class="secondary" data-toggle-menu="${m.id}" data-active="${m.active}">${m.active?'Deaktivieren':'Aktivieren'}</button></td></tr>`).join('')}</tbody></table>`;$('adminMenuList').querySelectorAll('[data-toggle-menu]').forEach(b=>b.addEventListener('click',()=>toggleMenu(b.dataset.toggleMenu,b.dataset.active==='true')));}catch(e){say('Administration konnte nicht geladen werden: '+e.message,true);}}
-async function toggleMenu(id,active){try{const {error}=await sb.from('menu_items').update({active:!active}).eq('id',id);if(error)throw error;await loadMenu();await loadAdmin();}catch(e){say('Menüartikel konnte nicht geändert werden: '+e.message,true);}}
+async function loadAdmin(){try{const {data,error}=await sb.from('menu_items').select('id,name,category,price,active').order('category').order('name');if(error)throw error;$('adminMenuList').innerHTML=`<table class="table"><thead><tr><th>Artikel</th><th>Kategorie</th><th>Preis</th><th>Aktiv</th><th></th></tr></thead><tbody>${(data||[]).map(m=>`<tr><td>${esc(m.name)}</td><td>${esc(m.category)}</td><td>${money(m.price)}</td><td>${m.active?'Ja':'Nein'}</td>
+
+
+
+<td>
+  <button
+    class="secondary"
+    data-toggle-menu="${m.id}"
+    data-active="${m.active}">
+    ${m.active ? 'Deaktivieren' : 'Aktivieren'}
+  </button>
+
+  <button
+    class="danger"
+    data-delete-menu="${m.id}">
+    Löschen
+  </button>
+</td>
+</tr>`).join('')}</tbody></table>`;$('adminMenuList')
+.querySelectorAll('[data-toggle-menu]')
+
+.forEach(b=>b.addEventListener('click',()=>toggleMenu(b.dataset.toggleMenu,b.dataset.active==='true')));}catch(e){say('Administration konnte nicht geladen werden: '+e.message,true);}}
+
+
+
+async function deleteMenuItem(id) {
+  if (!confirm('Diesen Artikel endgültig löschen?')) return;
+
+  try {
+    const { error } = await sb
+      .from('menu_items')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+
+    await loadMenu();
+    await loadAdmin();
+    say('Menüartikel wurde gelöscht.');
+  } catch (e) {
+    say('Menüartikel konnte nicht gelöscht werden: ' + e.message, true);
+  }
+}
+
+
+
+
+
+async function toggleMenu(id, active) {
+  try {
+    const { error } = await sb
+      .from('menu_items')
+      .update({ active: !active })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    await loadMenu();
+    await loadAdmin();
+  } catch (e) {
+    say('Menüartikel konnte nicht geändert werden: ' + e.message, true);
+  }
+}
+
+
+
+
+
+
+
+
 async function calculateClosing(){const date=$('closingDate').value;if(!date){say('Bitte ein Datum auswählen.',true);return null;}try{const {data,error}=await sb.rpc('get_day_summary',{p_business_date:date});if(error)throw error;const d=Array.isArray(data)?data[0]:data;if(!d)throw new Error('Keine Abrechnung erhalten.');$('closingSummary').innerHTML=`<div class="totals"><div class="totalbox">Umsatz Bestellungen<strong>${money(d.total_sales)}</strong></div><div class="totalbox">Bar bezahlt<strong>${money(d.cash_total)}</strong></div><div class="totalbox">TWINT bezahlt<strong>${money(d.twint_total)}</strong></div><div class="totalbox">Noch offen<strong>${money(d.open_amount)}</strong></div><div class="totalbox">Anzahl Bestellungen<strong>${Number(d.order_count||0)}</strong></div></div>`;return d;}catch(e){say('Abrechnung konnte nicht berechnet werden: '+e.message,true);return null;}}
 async function saveClosing(){const summary=await calculateClosing();if(!summary)return;if(Number(summary.open_amount)>0&&!confirm('Es sind noch offene Zahlungen vorhanden. Tagesabschluss trotzdem speichern?'))return;if(!confirm('Tagesabschluss für '+$('closingDate').value+' endgültig speichern?'))return;try{const {error}=await sb.rpc('close_business_day',{p_business_date:$('closingDate').value,p_notes:$('closingNotes').value.trim()});if(error)throw error;say('Tagesabschluss gespeichert.');await loadClosingHistory();}catch(e){say('Tagesabschluss konnte nicht gespeichert werden: '+e.message,true);}}
 async function loadClosingHistory(){try{const {data,error}=await sb.from('day_closings').select('business_date,closed_at,closed_by,total_sales,cash_total,twint_total,open_amount,order_count,notes').order('business_date',{ascending:false}).limit(30);if(error)throw error;$('closingHistory').innerHTML='<h3>Letzte Tagesabschlüsse</h3>'+(data?.length?`<table class="table"><thead><tr><th>Datum</th><th>Umsatz</th><th>Bar</th><th>TWINT</th><th>Offen</th><th>Gespeichert</th></tr></thead><tbody>${data.map(d=>`<tr><td>${esc(d.business_date)}</td><td>${money(d.total_sales)}</td><td>${money(d.cash_total)}</td><td>${money(d.twint_total)}</td><td>${money(d.open_amount)}</td><td>${new Date(d.closed_at).toLocaleString('de-CH')}</td></tr>`).join('')}</tbody></table>`:'<p class="muted">Noch keine Tagesabschlüsse.</p>');}catch(e){say('Tagesabschluss-Historie konnte nicht geladen werden: '+e.message,true);}}
@@ -568,6 +792,64 @@ async function logout(){if(sb)await sb.auth.signOut();currentUser=null;profile=n
 $('saveConfigBtn').addEventListener('click',async()=>{if(await initConnection())say('Verbindung gespeichert. Du kannst dich jetzt anmelden.');});$('testConfigBtn').addEventListener('click',connectTest);$('loginBtn').addEventListener('click',async()=>{if(!sb&&!(await initConnection()))return;try{const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;await onSignedIn(data.user);}catch(e){say('Anmeldung fehlgeschlagen: '+e.message,true);}});$('logoutBtn').addEventListener('click',logout);$('submitOrderBtn').addEventListener('click',submitOrder);$('refreshOrdersBtn').addEventListener('click',refreshOrders);$('addMenuBtn').addEventListener('click',addMenuItem);$('previewClosingBtn').addEventListener('click',calculateClosing);$('saveClosingBtn').addEventListener('click',saveClosing);
 (async()=>{try{const raw=localStorage.getItem(CONFIG_KEY);if(raw){setConfigUI(JSON.parse(raw));}else{setConfigUI({url:'https://mkdsxgckckzxqaupilrp.supabase.co',key:'sb_publishable_dDoTEWtrcI8ulfVD4UiZZg_JsirepVu'});}if(await initConnection()){const {data:{session}}=await sb.auth.getSession();if(session)await onSignedIn(session.user);else $('loginPanel').classList.remove('hidden');}}catch(e){console.warn(e);say('Supabase-Verbindung konnte nicht initialisiert werden. Bitte Verbindung prüfen.',true);}})();
 })();
+
+
+
+
+
+
+
+
+document.getElementById('togglePassword')?.addEventListener('click', function () {
+  const password = document.getElementById('password');
+  const anzeigen = password.type === 'password';
+
+  password.type = anzeigen ? 'text' : 'password';
+  this.textContent = anzeigen ? '🙈' : '👁';
+  this.title = anzeigen ? 'Passwort verbergen' : 'Passwort anzeigen';
+  this.setAttribute(
+    'aria-label',
+    anzeigen ? 'Passwort verbergen' : 'Passwort anzeigen'
+  );
+});
+
+
+
+
+
+document.getElementById('resetTodayOrdersBtn')
+  ?.addEventListener('click', async () => {
+    const bestaetigung = prompt(
+      'ACHTUNG: Alle heutigen Bestellungen und Positionen werden gelöscht.\n\nZum Bestätigen RESET eingeben:'
+    );
+
+    if (bestaetigung !== 'RESET') return;
+
+    try {
+      const { data, error } = await sb.rpc('reset_today_orders');
+
+      if (error) throw error;
+
+      await refreshOrders();
+      await loadAdmin();
+
+      say(`${data} heutige Bestellungen wurden gelöscht.`, false);
+    } catch (e) {
+      say('Zurücksetzen fehlgeschlagen: ' + e.message, true);
+    }
+  });
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
 </body>
 </html>
