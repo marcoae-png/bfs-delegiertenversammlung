@@ -100,7 +100,44 @@ header .actions {
 <div id="notice" class="msg hidden" role="status"></div>
 <nav class="tabs" id="tabs"></nav>
 <section id="serviceView" class="panel hidden"><h2 class="section-title">Neue Bestellung</h2><div class="grid"><div><label for="tableNumber">Tisch</label><select id="tableNumber"></select></div><div><label for="paymentMethod">Zahlungsart</label><select id="paymentMethod"><option value="cash">Bar</option><option value="twint">TWINT (manuell prüfen)</option></select></div></div><h3>Karte</h3><div id="menuGrid" class="menu-grid"></div><div class="actions" style="justify-content:space-between;margin-top:14px"><div><span class="muted">Total</span><div id="cartTotal" class="big">CHF 0.00</div></div><button id="submitOrderBtn" type="button">Bestellung senden</button></div><p class="foot">Die Zahlungsart wird zur Information erfasst. In dieser Version gibt es keine Zahlungsbestätigung.</p></section>
-<section id="ordersView" class="panel hidden"><div class="order-top"><h2 class="section-title">Bestellungen</h2><div class="actions"><button id="refreshOrdersBtn" class="secondary" type="button">Aktualisieren</button></div></div><div id="ordersList"></div></section>
+<section id="ordersView" class="panel hidden">
+
+
+
+
+
+<section id="runnerView" class="panel hidden">
+  <h2>Bereit zum Ausliefern</h2>
+  <p class="muted">Hier erscheinen fertige Bestellungen für den Läufer.</p>
+  <button type="button" id="refreshRunnerBtn">Aktualisieren</button>
+  <div id="runnerList"></div>
+</section>
+
+
+
+
+
+
+
+
+
+<div class="order-top"><h2 class="section-title">Bestellungen</h2><div class="actions"><button id="refreshOrdersBtn" class="secondary" type="button">Aktualisieren</button></div></div><div id="ordersList"></div></section>
+
+
+
+<section id="runnerView" class="panel hidden">
+  <div class="order-top">
+    <h2 class="section-title">Läufer – bereit zur Auslieferung</h2>
+    <button id="refreshRunnerBtn" class="secondary" type="button">
+      Aktualisieren
+    </button>
+  </div>
+  <div id="runnerList"></div>
+</section>
+
+
+
+
 <section id="closingView" class="panel hidden"><h2 class="section-title">Tagesabschluss</h2><div class="grid"><div><label for="closingDate">Datum</label><input id="closingDate" type="date"></div><div><label for="closingNotes">Bemerkungen (optional)</label><input id="closingNotes" placeholder="z. B. Kasse übergeben"></div></div><div class="actions" style="margin-top:12px"><button id="previewClosingBtn" class="secondary" type="button">Abrechnung berechnen</button><button id="saveClosingBtn" type="button">Tagesabschluss speichern</button></div><div id="closingSummary" style="margin-top:14px"></div><div id="closingHistory" style="margin-top:18px"></div></section>
 <section id="adminView" class="panel hidden"><h2 class="section-title">Administration</h2><h3>Menüartikel</h3><div class="grid"><div><label for="menuName">Artikelname</label><input id="menuName" placeholder="z. B. Bratwurst"></div><div><label for="menuCategory">Kategorie</label><select id="menuCategory"><option>Essen</option><option>Getränke</option><option>Dessert</option><option>Sonstiges</option></select></div><div><label for="menuPrice">Preis in CHF</label><input id="menuPrice" type="number" min="0" step="0.05" placeholder="8.50"></div></div><div class="actions" style="margin:10px 0 18px"><button id="addMenuBtn" type="button">Artikel hinzufügen</button></div><div id="adminMenuList"></div></section>
 </section>
@@ -124,9 +161,76 @@ async function connectTest(){const c=getConfig();if(!validConfig(c)){say('Bitte 
 async function loadProfile(){profile={id:currentUser.id,email:currentUser.email||'',display_name:currentUser.user_metadata?.display_name||currentUser.email||'Angemeldeter Benutzer',role:'all'};}
 async function onSignedIn(user){currentUser=user;try{await loadProfile();$('loginPanel').classList.add('hidden');$('appPanel').classList.remove('hidden');$('logoutBtn').classList.remove('hidden');$('userLabel').textContent=profile.display_name||profile.email||user.email;renderTabs();await loadMenu();await refreshOrders();await loadAdmin();await loadClosingHistory();showTab(firstTab());}catch(e){say('Daten konnten nicht geladen werden: '+e.message+' — bitte Supabase-Berechtigungen prüfen.',true);}}
 function firstTab(){return 'service';}
-function allowed(tab){return ['service','orders','closing','admin'].includes(tab);}
-function renderTabs(){const all=[['service','Neue Bestellung'],['orders','Bestellungen / Küche'],['closing','Tagesabschluss'],['admin','Menü verwalten']];$('tabs').innerHTML=all.filter(([t])=>allowed(t)).map(([t,n])=>`<button type="button" data-tab="${t}" class="${t===activeTab?'active':''}">${n}</button>`).join('');$('tabs').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));$('tableNumber').innerHTML=Array.from({length:30},(_,i)=>`<option value="${i+1}">Tisch ${i+1}</option>`).join('');$('closingDate').value=new Date().toLocaleDateString('en-CA');}
-function showTab(tab){if(!allowed(tab))return;activeTab=tab;['service','orders','closing','admin'].forEach(t=>$(t+'View').classList.toggle('hidden',t!==tab));$('tabs').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='orders')refreshOrders();if(tab==='admin')loadAdmin();if(tab==='closing')loadClosingHistory();clearSay();}
+
+
+
+
+
+
+function allowed(tab) {
+  return ['service', 'orders', 'runner', 'closing', 'admin'].includes(tab);
+}
+
+
+
+function renderTabs() {
+  const all = [
+    ['service', 'Neue Bestellung'],
+    ['orders', 'Küche'],
+    ['runner', 'Läufer'],
+    ['closing', 'Tagesabschluss'],
+    ['admin', 'Menü verwalten']
+  ];
+
+  $('tabs').innerHTML = all
+    .filter(([t]) => allowed(t))
+    .map(([t, n]) =>
+      `<button type="button" data-tab="${t}" class="${t === activeTab ? 'active' : ''}">${n}</button>`
+    )
+    .join('');
+
+  $('tabs').querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => showTab(b.dataset.tab));
+  });
+
+  $('tableNumber').innerHTML = Array.from(
+    { length: 30 },
+    (_, i) => `<option value="${i + 1}">Tisch ${i + 1}</option>`
+  ).join('');
+
+  $('closingDate').value = new Date().toLocaleDateString('en-CA');
+}
+
+
+
+
+function showTab(tab) {
+  if (!allowed(tab)) return;
+
+  activeTab = tab;
+
+  ['service', 'orders', 'runner', 'closing', 'admin']
+    .forEach(t => {
+      $(t + 'View').classList.toggle('hidden', t !== tab);
+    });
+
+  $('tabs').querySelectorAll('button').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+
+  if (tab === 'orders' || tab === 'runner') {
+    refreshOrders();
+  }
+
+  if (tab === 'admin') loadAdmin();
+  if (tab === 'closing') loadClosingHistory();
+
+  clearSay();
+}
+
+
+
+
 async function loadMenu(){const {data,error}=await sb.from('menu_items').select('id,name,category,price,active').eq('active',true).order('category').order('name');if(error)throw error;menu=data||[];renderMenu();}
 function renderMenu(){
   $('menuGrid').innerHTML=menu.length?menu.map(m=>{
@@ -149,7 +253,88 @@ function addToCart(id){
 }
 function updateCartTotal(){let total=0;for(const v of cart.values())total+=v.quantity*v.price;$('cartTotal').textContent=money(total);$('submitOrderBtn').disabled=cart.size===0;}
 async function submitOrder(){if(!cart.size)return;const table=Number($('tableNumber').value),method=$('paymentMethod').value;const items=Array.from(cart.values()).map(i=>({menu_item_id:i.menu_item_id,quantity:i.quantity}));$('submitOrderBtn').disabled=true;try{const {data,error}=await sb.rpc('create_order',{p_table_number:table,p_payment_method:method,p_items:items});if(error)throw error;cart.clear();renderMenu();say('Bestellung #'+data+' wurde an die Küche gesendet.');await refreshOrders();}catch(e){say('Bestellung konnte nicht gespeichert werden: '+e.message,true);}finally{$('submitOrderBtn').disabled=false;}}
-async function refreshOrders(){if(!sb||!profile)return;try{const {data,error}=await sb.from('orders').select('id,table_no,table_number,status,payment_method,payment_status,total,created_at,order_items(id,name_snapshot,name,quantity,unit_price,line_total)').order('created_at',{ascending:false}).limit(150);if(error)throw error;orders=(data||[]).map(o=>({...o,order_no:o.order_no??o.id,table_number:o.table_number??o.table_no, status:({'Neu':'new','In Arbeit':'in_progress','Erledigt':'done','new':'new','in_progress':'in_progress','done':'done'})[o.status]||'new',payment_method:(String(o.payment_method).toLowerCase()==='twint'?'twint':'cash'),payment_status:({'Bezahlt':'paid','Offen':'unpaid','Prüfen':'checking','paid':'paid','unpaid':'unpaid','checking':'checking'})[o.payment_status]||'unpaid',order_items:(o.order_items||[]).map(i=>({...i,name_snapshot:i.name_snapshot||i.name||'Artikel',line_total:i.line_total??Number(i.unit_price||0)*Number(i.quantity||0)}))}));renderOrders();}catch(e){say('Bestellungen konnten nicht geladen werden: '+e.message,true);}}
+
+
+
+async function refreshOrders() {
+  if (!sb || !profile) return;
+
+  try {
+    const { data, error } = await sb
+      .from('orders')
+      .select('id,table_no,table_number,status,payment_method,payment_status,total,created_at,delivered_at,order_items(id,name_snapshot,name,quantity,unit_price,line_total)')
+      .order('created_at', { ascending: false })
+      .limit(150);
+
+    if (error) throw error;
+
+    orders = (data || []).map(o => ({
+      ...o,
+      order_no: o.order_no ?? o.id,
+      table_number: o.table_number ?? o.table_no,
+      status: ({
+        'Neu': 'new',
+        'In Arbeit': 'in_progress',
+        'Erledigt': 'done',
+        'new': 'new',
+        'in_progress': 'in_progress',
+        'done': 'done'
+      })[o.status] || 'new',
+      payment_method:
+        String(o.payment_method).toLowerCase() === 'twint'
+          ? 'twint' : 'cash',
+      order_items: (o.order_items || []).map(i => ({
+        ...i,
+        name_snapshot: i.name_snapshot || i.name || 'Artikel',
+        line_total: i.line_total ??
+          Number(i.unit_price || 0) * Number(i.quantity || 0)
+      }))
+    }));
+
+    renderOrders();
+
+    // Fertige, noch nicht ausgelieferte Bestellungen für den Läufer
+    const bereit = orders.filter(
+      o => o.status === 'done' && !o.delivered_at
+    );
+
+    const liste = $('runnerList');
+
+    if (liste) {
+      liste.innerHTML = bereit.length
+        ? bereit.map(o => `
+            <article class="order">
+              <h3>Bestellung #${esc(String(o.order_no))}</h3>
+              <p><strong>Tisch ${esc(String(o.table_number))}</strong></p>
+              <ul>
+                ${o.order_items.map(i =>
+                  `<li>${i.quantity} × ${esc(i.name_snapshot)}</li>`
+                ).join('')}
+              </ul>
+              <button type="button"
+                data-deliver="${esc(String(o.id))}">
+                Ausgeliefert
+              </button>
+            </article>
+          `).join('')
+        : '<p class="muted">Keine fertigen Bestellungen zum Ausliefern.</p>';
+
+      liste.querySelectorAll('[data-deliver]').forEach(button => {
+        button.addEventListener('click', async () => {
+          await markOrderDelivered(button.dataset.deliver);
+        });
+      });
+    }
+
+  } catch (e) {
+    say('Bestellungen konnten nicht geladen werden: ' + e.message, true);
+  }
+}
+
+
+
+
+
 function orderHTML(o){const status=o.status==='new'?'Neu':o.status==='in_progress'?'In Arbeit':'Erledigt';const next=o.status==='new'?'in_progress':'done';const paymentLabel=o.payment_method==='twint'?'TWINT':'Bar';return `<article class="order ${o.status==='in_progress'?'progress':''} ${o.status==='done'?'done':''}" data-order="${o.id}"><div class="order-top"><div><strong>Bestellung #${o.order_no}</strong> · Tisch ${o.table_number}<div class="muted">${new Date(o.created_at).toLocaleString('de-CH',{dateStyle:'short',timeStyle:'short'})}</div></div><div class="actions"><span class="pill ${o.status==='in_progress'?'orange':o.status==='done'?'green':''}">${status}</span><span class="pill">Zahlungsart: ${paymentLabel}</span><strong>${money(o.total)}</strong></div></div><ul>${(o.order_items||[]).map(i=>`<li>${i.quantity} × ${esc(i.name_snapshot)} <span class="muted">(${money(i.line_total)})</span></li>`).join('')}</ul><div class="actions">${o.status!=='done'?`<button type="button" data-status="${o.id}" data-next="${next}" class="${next==='done'?'warn':''}">${o.status==='new'?'1. Klick – In Arbeit':'2. Klick – Erledigt'}</button>`:'<span class="muted">Abgeschlossen</span>'}</div></article>`;}
 function renderOrders(){const showDone=orders.filter(o=>o.status!=='done'||recentlyDone.has(String(o.id)));$('ordersList').innerHTML=showDone.length?showDone.map(orderHTML).join(''):'<p class="muted">Keine Bestellungen vorhanden.</p>';$('ordersList').querySelectorAll('[data-status]').forEach(b=>b.addEventListener('click',()=>setStatus(b.dataset.status,b.dataset.next)));}
 async function setStatus(id,status){try{const {error}=await sb.rpc('set_order_status',{p_order_id:Number(id),p_status:status});if(error)throw error;if(status==='done'){recentlyDone.add(String(id));await refreshOrders();setTimeout(()=>{recentlyDone.delete(String(id));renderOrders();},2000);}else await refreshOrders();}catch(e){say('Küchenstatus konnte nicht geändert werden: '+e.message,true);}}
