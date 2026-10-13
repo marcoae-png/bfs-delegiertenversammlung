@@ -100,12 +100,16 @@ header .actions {
 <div id="notice" class="msg hidden" role="status"></div>
 <nav class="tabs" id="tabs"></nav>
 <section id="serviceView" class="panel hidden"><h2 class="section-title">Neue Bestellung</h2><div class="grid"><div><label for="tableNumber">Tisch</label><select id="tableNumber"></select></div><div><label for="paymentMethod">Zahlungsart</label><select id="paymentMethod"><option value="cash">Bar</option><option value="twint">TWINT (manuell prüfen)</option></select></div></div><h3>Karte</h3><div id="menuGrid" class="menu-grid"></div><div class="actions" style="justify-content:space-between;margin-top:14px"><div><span class="muted">Total</span><div id="cartTotal" class="big">CHF 0.00</div></div><button id="submitOrderBtn" type="button">Bestellung senden</button></div><p class="foot">Die Zahlungsart wird zur Information erfasst. In dieser Version gibt es keine Zahlungsbestätigung.</p></section>
+
+
+
 <section id="ordersView" class="panel hidden">
-
-
-
-
-
+  <!-- Küchenbereich -->
+  <h2>Bestellungen Küche</h2>
+  <div id="ordersList">
+    <p class="muted">Bestellungen werden geladen …</p>
+  </div>
+</section>
 
 <section id="runnerView" class="panel hidden">
   <h2>Bereit zum Ausliefern</h2>
@@ -119,10 +123,6 @@ header .actions {
     <p class="muted">Bestellungen werden geladen …</p>
   </div>
 </section>
-
-
-
-
 
 
 
