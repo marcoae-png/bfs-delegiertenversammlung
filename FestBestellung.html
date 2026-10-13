@@ -391,9 +391,13 @@ function renderOrders() {
               `<li>${i.quantity} × ${esc(i.name_snapshot)}</li>`
             ).join('')}
           </ul>
-          <button type="button" data-deliver="${esc(String(o.id))}">
-            Ausgeliefert
-          </button>
+
+<button type="button"
+  class="warn"
+  data-deliver="${esc(String(o.id))}">
+  Ausgeliefert
+</button>
+
         </article>
       `).join('')
     : '<p class="muted">Keine fertigen Bestellungen zum Ausliefern.</p>';
