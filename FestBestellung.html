@@ -817,27 +817,39 @@ document.getElementById('togglePassword')?.addEventListener('click', function ()
 
 
 
-document.getElementById('resetTodayOrdersBtn')
-  ?.addEventListener('click', async () => {
-    const bestaetigung = prompt(
-      'ACHTUNG: Alle heutigen Bestellungen und Positionen werden gelöscht.\n\nZum Bestätigen RESET eingeben:'
-    );
 
-    if (bestaetigung !== 'RESET') return;
+document.addEventListener('click', async function (event) {
+  const button = event.target.closest('#resetTodayOrdersBtn');
+  if (!button) return;
 
-    try {
-      const { data, error } = await sb.rpc('reset_today_orders');
+  console.log('Reset-Knopf wurde geklickt');
 
-      if (error) throw error;
+  const bestaetigung = prompt(
+    'Alle heutigen Bestellungen und Positionen werden gelöscht.\n\nZum Bestätigen RESET eingeben:'
+  );
 
-      await refreshOrders();
-      await loadAdmin();
+  if (bestaetigung !== 'RESET') return;
 
-      say(`${data} heutige Bestellungen wurden gelöscht.`, false);
-    } catch (e) {
-      say('Zurücksetzen fehlgeschlagen: ' + e.message, true);
-    }
-  });
+  try {
+    button.disabled = true;
+    button.textContent = 'Wird zurückgesetzt ...';
+
+    const { data, error } = await sb.rpc('reset_today_orders');
+    if (error) throw error;
+
+    await refreshOrders();
+    await loadAdmin();
+
+    say(`${data} heutige Bestellungen wurden gelöscht.`, false);
+  } catch (e) {
+    console.error('Reset-Fehler:', e);
+    say('Zurücksetzen fehlgeschlagen: ' + e.message, true);
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Heutige Bestellungen zurücksetzen';
+  }
+});
+
 
 
 
