@@ -404,6 +404,7 @@ function renderOrders() {
     );
   });
 
+  console.log('Bestellungen für Läufer:', orders);
   // Läuferliste: fertig, aber noch nicht ausgeliefert
   const ready = orders.filter(
     o => o.status === 'done' && !o.delivered_at
