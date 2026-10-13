@@ -262,6 +262,9 @@ function showTab(tab) {
 
   activeTab = tab;
 
+  console.log('Aktiver Tab:', tab);
+console.log('Läuferbereich:', $('runnerView'));
+
   ['service', 'orders', 'runner', 'closing', 'admin']
     .forEach(t => {
       $(t + 'View').classList.toggle('hidden', t !== tab);
