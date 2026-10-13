@@ -519,6 +519,107 @@ header .actions {
   }
 }
 
+/* =====================================
+   FESTBESTELLUNG – HANDY KOMPAKT
+   ===================================== */
+@media (max-width: 600px) {
+
+  /* Weniger Platz für Aussenabstände */
+  .wrap {
+    padding: 5px;
+  }
+
+  .panel {
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+
+  /* Kategorien nebeneinander */
+  #menuGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+  }
+
+  #menuGrid .menu-category {
+    min-width: 0;
+    margin: 0;
+  }
+
+  #menuGrid .menu-category-title {
+    font-size: 13px;
+    line-height: 1.2;
+    margin: 0 0 7px;
+    overflow-wrap: anywhere;
+  }
+
+  /* Artikel untereinander in jeder Kategorie */
+  #menuGrid .menu-category-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  /* Kompakte Artikelkarten */
+  #menuGrid .item {
+    min-width: 0;
+    min-height: 0;
+    padding: 8px 5px;
+    border-radius: 8px;
+    gap: 4px;
+    overflow-wrap: anywhere;
+  }
+
+  #menuGrid .item h3 {
+    font-size: 12px;
+    line-height: 1.25;
+    margin: 0 0 5px;
+  }
+
+  #menuGrid .item .price {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  #menuGrid .item .tile-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-top: 5px;
+  }
+
+  #menuGrid .item .tile-hint {
+    font-size: 10px;
+    line-height: 1.2;
+  }
+
+  #menuGrid .item .cart-count {
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* Navigation kompakter */
+  .tabs {
+    gap: 5px;
+  }
+
+  .tabs button {
+    flex: 1 1 auto;
+    min-height: 42px;
+    padding: 8px 5px;
+    font-size: 12px;
+  }
+
+  /* Eingabefelder und Aktionen */
+  input,
+  select,
+  .actions button {
+    min-height: 42px;
+  }
+}
+
 
 
 
