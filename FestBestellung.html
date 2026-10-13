@@ -427,6 +427,11 @@ console.table(orders.map(o => ({
 console.log('Läufer-HTML:', runnerList.innerHTML);
 console.log('Läufer-Element sichtbar:', runnerList.offsetParent !== null);
 console.log('Anzahl Läuferkarten:', runnerList.querySelectorAll('.order').length);
+ console.log('Fertige Bestellungen für Läufer:', ready); 
+  console.log(
+  'Anzahl angezeigter Karten:',
+  runnerList.querySelectorAll('article.order').length
+);
     
     ? ready.map(o => `
         <article class="order">
