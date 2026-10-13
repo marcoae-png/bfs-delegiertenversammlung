@@ -294,6 +294,235 @@ header .actions {
 
 
 
+/* Kategorien klar voneinander trennen */
+.menu-category {
+  width: 100%;
+  margin: 0 0 32px;
+}
+
+.menu-category-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 0 0 12px;
+  border-bottom: 3px solid var(--border, #ddd);
+  font-size: 1.4rem;
+  line-height: 1.4;
+}
+
+.menu-category-count {
+  margin-left: auto;
+  font-size: 0.8rem;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+/* Jede Artikelkarte bekommt die ganze verfügbare Breite */
+
+
+
+/* Kategorie über die ganze Breite */
+.menu-category {
+  width: 100%;
+  margin: 0 0 30px;
+}
+
+.menu-category-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 0 0 10px;
+  border-bottom: 2px solid #d8dfd9;
+  font-size: 1.35rem;
+}
+
+.menu-category-count {
+  margin-left: auto;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #647067;
+}
+
+/* Eine Karte pro Zeile, volle Breite */
+.menu-category-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.menu-category-grid .menu-item-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 125px;
+  padding: 16px 20px;
+  border: 1px solid #dce4dd;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+/* Dezente Farben je nach Kategorie */
+.menu-category-essen .menu-item-card {
+  background: #fff8e6;
+  border-color: #eadbb2;
+}
+
+.menu-category-getränke .menu-item-card {
+  background: #edf6ff;
+  border-color: #c9dff2;
+}
+
+.menu-category-dessert .menu-item-card {
+  background: #f7f0ff;
+  border-color: #e0d0f1;
+}
+
+.menu-category-sonstiges .menu-item-card {
+  background: #f3f5f3;
+  border-color: #dce1dc;
+}
+
+/* Artikelname und Preis */
+.menu-item-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.menu-item-card .price {
+  margin-bottom: 14px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* Hinweis und Stückzahl */
+.menu-item-card .tile-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(80, 90, 80, 0.16);
+}
+
+.menu-item-card .tile-hint {
+  font-size: 0.95rem;
+}
+
+.menu-item-card .cart-count {
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Ausgewählte Karte */
+.menu-item-card.selected {
+  border: 2px solid #56805c;
+  box-shadow: 0 0 0 2px rgba(49, 95, 54, 0.08);
+}
+
+.menu-item-card:focus-visible {
+  outline: 3px solid #315f36;
+  outline-offset: 2px;
+}
+
+/* Handy */
+@media (max-width: 600px) {
+  .menu-item-card {
+    padding: 14px;
+    min-height: 120px;
+  }
+
+  .menu-item-card h3 {
+    font-size: 1.05rem;
+  }
+}
+
+
+
+/* Handy: Artikelkarten in den drei Kategorien */
+@media (max-width: 600px) {
+  #menuGrid .item {
+    padding: 8px 5px;
+    min-height: 100px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  #menuGrid .item h3 {
+    font-size: 12px;
+  }
+
+  #menuGrid .item .price {
+    font-size: 12px;
+  }
+
+  #menuGrid .item .tile-bottom {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  #menuGrid .item .tile-hint {
+    font-size: 10px;
+  }
+}
+
+
+
+/* Drei Kategorien nebeneinander */
+#menuGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: none;
+  align-items: start;
+  box-sizing: border-box;
+}
+
+/* Jede Kategorie belegt eine Spalte */
+#menuGrid .menu-category {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Artikel innerhalb der Kategorie untereinander */
+#menuGrid .menu-category-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+/* Artikelkarten füllen ihre Kategorie */
+#menuGrid .item {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Auf schmalen Bildschirmen untereinander */
+@media (max-width: 700px) {
+  #menuGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+
+
 </style>
 </head>
 <body>
@@ -527,8 +756,6 @@ function firstTab(){return 'service';}
 
 
 
-
-
 function allowed(tab) {
   return [
     'service',
@@ -602,15 +829,10 @@ function showTab(tab) {
 
   activeTab = tab;
 
-  console.log('Aktiver Tab:', tab);
-  console.log('Läuferbereich:', $('runnerView'));
-  console.log('Thekenbereich:', $('barView'));
-
   // Alle Ansichten ausblenden und nur den aktiven Bereich anzeigen
   ['service', 'orders', 'bar', 'runner', 'closing', 'admin']
     .forEach(t => {
       const view = $(t + 'View');
-
       if (view) {
         view.classList.toggle('hidden', t !== tab);
       }
@@ -621,12 +843,11 @@ function showTab(tab) {
     b.classList.toggle('active', b.dataset.tab === tab);
   });
 
-  // Bestellungen beim Öffnen der Arbeitsbereiche aktualisieren
-  if (['orders', 'bar', 'runner'].includes(tab)) {
+  // Bestellungen auch für die Getränkekasse neu laden
+  if (['service', 'orders', 'bar', 'runner'].includes(tab)) {
     refreshOrders();
   }
 
-  // Weitere Bereiche laden
   if (tab === 'admin') loadAdmin();
   if (tab === 'closing') loadClosingHistory();
 
@@ -635,18 +856,115 @@ function showTab(tab) {
 
 
 
+
+
+
 async function loadMenu(){const {data,error}=await sb.from('menu_items').select('id,name,category,price,active').eq('active',true).order('category').order('name');if(error)throw error;menu=data||[];renderMenu();}
-function renderMenu(){
-  $('menuGrid').innerHTML=menu.length?menu.map(m=>{
-    const q=cart.get(m.id)?.quantity||0;
-    return `<article class="item ${q?'selected':''}" role="button" tabindex="0" aria-label="${esc(m.name)} hinzufügen, aktueller Warenkorb: ${q} Stück" data-add-item="${m.id}"><h3>${esc(m.name)}</h3><div class="muted">${esc(m.category)}</div><div class="price">${money(m.price)}</div><div class="tile-bottom"><span class="tile-hint">Antippen: +1 Stück</span><span class="cart-count">${q} Stk.</span></div></article>`;
-  }).join(''):'<p class="muted">Noch keine aktiven Menüartikel vorhanden. Admin muss zuerst Artikel erfassen.</p>';
-  $('menuGrid').querySelectorAll('[data-add-item]').forEach(tile=>{
-    tile.addEventListener('click',()=>addToCart(tile.dataset.addItem));
-    tile.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();addToCart(tile.dataset.addItem);}});
+
+
+
+
+function renderMenu() {
+  const menuGrid = $('menuGrid');
+  if (!menuGrid) return;
+
+  const kategorien = ['Essen', 'Getränke', 'Dessert'];
+  const kategorienIcons = {
+    'Essen': '🍽️',
+    'Getränke': '🥤',
+    'Dessert': '🍰',
+    'Sonstiges': '📦'
+  };
+
+  function artikelHTML(m) {
+    const q = cart.get(m.id)?.quantity || 0;
+
+    return `
+      <article
+        class="item menu-item-card ${q ? 'selected' : ''}"
+        role="button"
+        tabindex="0"
+        aria-label="${esc(m.name)} hinzufügen, aktueller Warenkorb: ${q} Stück"
+        data-add-item="${esc(String(m.id))}"
+      >
+        <div class="menu-item-content">
+          <h3>${esc(m.name)}</h3>
+          <div class="price">${money(m.price)}</div>
+        </div>
+
+        <div class="tile-bottom">
+          <span class="tile-hint">
+            <span aria-hidden="true">＋</span> 1 Stück hinzufügen
+          </span>
+          <span class="cart-count">${q} Stk.</span>
+        </div>
+      </article>
+    `;
+  }
+
+  function kategorieHTML(kategorie, artikel) {
+    if (!artikel.length) return '';
+
+    return `
+      <section class="menu-category menu-category-${kategorie.toLowerCase()}">
+        <h2 class="menu-category-title">
+          <span aria-hidden="true">${kategorienIcons[kategorie] || '📦'}</span>
+          ${esc(kategorie)}
+          <span class="menu-category-count">${artikel.length} Artikel</span>
+        </h2>
+
+        <div class="menu-category-grid">
+          ${artikel.map(artikelHTML).join('')}
+        </div>
+      </section>
+    `;
+  }
+
+  const kategorienHTML = kategorien.map(kategorie => {
+    const artikel = menu.filter(m =>
+      String(m.category || '').trim().toLowerCase() ===
+      kategorie.toLowerCase()
+    );
+
+    return kategorieHTML(kategorie, artikel);
+  }).join('');
+
+  const sonstige = menu.filter(m =>
+    !kategorien.some(k =>
+      String(m.category || '').trim().toLowerCase() ===
+      k.toLowerCase()
+    )
+  );
+
+  const sonstigeHTML = kategorieHTML('Sonstiges', sonstige);
+
+  menuGrid.innerHTML = menu.length
+    ? kategorienHTML + sonstigeHTML
+    : '<p class="muted">Noch keine aktiven Menüartikel vorhanden. Admin muss zuerst Artikel erfassen.</p>';
+
+  menuGrid.querySelectorAll('[data-add-item]').forEach(tile => {
+    const hinzufuegen = () => addToCart(tile.dataset.addItem);
+
+    tile.addEventListener('click', hinzufuegen);
+
+    tile.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        hinzufuegen();
+      }
+    });
   });
+
   updateCartTotal();
 }
+
+
+
+
+
+
+
+
 function addToCart(id){
   const item=menu.find(m=>m.id===id);
   if(!item)return;
@@ -661,6 +979,7 @@ async function submitOrder(){if(!cart.size)return;const table=Number($('tableNum
 
 
  
+
 async function refreshOrders() {
   if (!sb || !profile) return;
 
@@ -674,6 +993,7 @@ async function refreshOrders() {
         status,
         kitchen_status,
         bar_status,
+        runner_status,
         payment_method,
         payment_status,
         total,
@@ -720,38 +1040,26 @@ async function refreshOrders() {
       ])
     );
 
+    const normalisiereStatus = status => ({
+      'Neu': 'new',
+      'In Arbeit': 'in_progress',
+      'Erledigt': 'done',
+      'new': 'new',
+      'in_progress': 'in_progress',
+      'done': 'done'
+    })[status] || 'new';
+
     orders = geladeneBestellungen.map(o => ({
       ...o,
 
       order_no: o.order_no ?? o.id,
       table_number: o.table_number ?? o.table_no,
 
-      status: ({
-        'Neu': 'new',
-        'In Arbeit': 'in_progress',
-        'Erledigt': 'done',
-        'new': 'new',
-        'in_progress': 'in_progress',
-        'done': 'done'
-      })[o.status] || 'new',
+      status: normalisiereStatus(o.status),
+      kitchen_status: normalisiereStatus(o.kitchen_status),
+      bar_status: normalisiereStatus(o.bar_status),
 
-      kitchen_status: ({
-        'Neu': 'new',
-        'In Arbeit': 'in_progress',
-        'Erledigt': 'done',
-        'new': 'new',
-        'in_progress': 'in_progress',
-        'done': 'done'
-      })[o.kitchen_status] || 'new',
-
-      bar_status: ({
-        'Neu': 'new',
-        'In Arbeit': 'in_progress',
-        'Erledigt': 'done',
-        'new': 'new',
-        'in_progress': 'in_progress',
-        'done': 'done'
-      })[o.bar_status] || 'new',
+      runner_status: o.runner_status || 'ready',
 
       payment_method:
         String(o.payment_method || '').toLowerCase() === 'twint'
@@ -759,62 +1067,52 @@ async function refreshOrders() {
           : 'cash',
 
       order_items: (o.order_items || []).map(i => {
-        const bezahlt = zahlungenNachPosition.get(String(i.id)) || {
-          paid_quantity: 0,
-          paid_amount: 0
-        };
+        const bezahlt =
+          zahlungenNachPosition.get(String(i.id)) || {
+            paid_quantity: 0,
+            paid_amount: 0
+          };
 
-        const quantity = Number(i.quantity || 0);
-        const unitPrice = Number(i.unit_price || 0);
-        const lineTotal = i.line_total == null
-          ? unitPrice * quantity
-          : Number(i.line_total);
+        const menge = Number(i.quantity || 0);
+        const einzelpreis = Number(i.unit_price || 0);
+        const bezahlteMenge = Number(bezahlt.paid_quantity || 0);
+        const bezahlterBetrag = Number(bezahlt.paid_amount || 0);
 
-        const istGetraenk = [
-          'getränke',
-          'getraenke',
-          'drinks'
-        ].includes(
-          String(i.category || '')
-            .trim()
-            .toLowerCase()
+        const offeneMenge = Math.max(
+          0,
+          menge - bezahlteMenge
+        );
+
+        const offenerBetrag = Math.max(
+          0,
+          Math.round(offeneMenge * einzelpreis * 100) / 100
         );
 
         return {
           ...i,
+
           name_snapshot: i.name_snapshot || i.name || 'Artikel',
-          line_total: lineTotal,
 
-          // Teilzahlungen gelten nur für Getränke
-          paid_quantity: istGetraenk
-            ? bezahlt.paid_quantity
-            : 0,
+          line_total: i.line_total == null
+            ? menge * einzelpreis
+            : Number(i.line_total),
 
-          paid_amount: istGetraenk
-            ? bezahlt.paid_amount
-            : 0,
+          paid_quantity: bezahlteMenge,
+          paid_amount: bezahlterBetrag,
 
-          open_quantity: istGetraenk
-            ? Math.max(0, quantity - bezahlt.paid_quantity)
-            : 0,
-
-          open_amount: istGetraenk
-            ? Math.max(
-                0,
-                Math.round(
-                  (quantity - bezahlt.paid_quantity) *
-                  unitPrice * 100
-                ) / 100
-              )
-            : 0
+          // Nur Artikel mit positivem Preis sind verrechenbar
+          open_quantity: einzelpreis > 0 ? offeneMenge : 0,
+          open_amount: einzelpreis > 0 ? offenerBetrag : 0
         };
       })
     }));
 
     renderOrders();
+    renderDrinkPayments();
 
   } catch (e) {
     console.error('refreshOrders:', e);
+
     say(
       'Bestellungen konnten nicht geladen werden: ' + e.message,
       true
@@ -911,6 +1209,307 @@ function orderHTML(o) {
   `;
 }
 
+
+
+
+
+
+
+let drinkPaymentSelection = new Map();
+
+
+function renderDrinkPayments() {
+  const container = $('drinkPaymentList');
+  const tableSelect = $('tableNumber');
+
+  if (!container || !tableSelect) return;
+
+  const table = String(tableSelect.value || '');
+
+  if (!table) {
+    container.innerHTML =
+      '<p class="muted">Bitte zuerst einen Tisch auswählen.</p>';
+    return;
+  }
+
+  const todayZurich = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Zurich',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date());
+
+  const isToday = value => value &&
+    new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/Zurich',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(new Date(value)) === todayZurich;
+
+  const tableOrders = orders.filter(o =>
+    String(o.table_number ?? o.table_no ?? '') === table &&
+    isToday(o.created_at)
+  );
+
+  const lines = [];
+
+  tableOrders.forEach(order => {
+    (order.order_items || []).forEach(item => {
+      const unitPrice = Number(item.unit_price || 0);
+
+      // Nur kostenpflichtige Artikel abrechnen
+      if (unitPrice <= 0) return;
+
+      const quantity = Number(item.quantity || 0);
+      const paidQuantity = Number(item.paid_quantity || 0);
+
+      const openQuantity = Math.max(
+        0,
+        Number(
+          item.open_quantity ?? (quantity - paidQuantity)
+        )
+      );
+
+      if (openQuantity <= 0) return;
+
+      const id = String(item.id);
+
+      const selected = Math.min(
+        openQuantity,
+        Number(drinkPaymentSelection.get(id) || 0)
+      );
+
+      lines.push({
+        id,
+        orderId: order.id,
+        orderNo: order.order_no ?? order.id,
+        name: item.name_snapshot || item.name || 'Artikel',
+        quantity: openQuantity,
+        unitPrice,
+        selected
+      });
+    });
+  });
+
+  const money = amount =>
+    new Intl.NumberFormat('de-CH', {
+      style: 'currency',
+      currency: 'CHF'
+    }).format(amount);
+
+  const openTotal = lines.reduce(
+    (sum, item) => sum + item.quantity * item.unitPrice,
+    0
+  );
+
+  const selectedTotal = lines.reduce(
+    (sum, item) => sum + item.selected * item.unitPrice,
+    0
+  );
+
+  if (!lines.length) {
+    container.innerHTML = `
+      <article class="order">
+        <h3>Tisch ${esc(table)}</h3>
+        <p>Offener Betrag:
+          <strong>${money(0)}</strong>
+        </p>
+        <p class="muted">
+          Keine offenen kostenpflichtigen Artikel von heute.
+        </p>
+      </article>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <article class="order">
+      <h3>Tisch ${esc(table)} – Artikel abrechnen</h3>
+
+      <div class="grid">
+        <div>
+          <span class="muted">Noch offen am Tisch</span>
+          <div class="big">${money(openTotal)}</div>
+        </div>
+        <div>
+          <span class="muted">Diese Person bezahlt</span>
+          <div class="big">${money(selectedTotal)}</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px">
+        ${lines.map(item => `
+          <div class="drink-payment-row"
+               style="display:flex;align-items:center;gap:8px;
+                      justify-content:space-between;padding:10px 0;
+                      border-bottom:1px solid #ddd">
+
+            <div style="flex:1;min-width:0">
+              <strong>${esc(String(item.name))}</strong>
+              <div class="muted">
+                ${money(item.unitPrice)} pro Stück ·
+                ${item.quantity} offen
+              </div>
+              <div>
+                ${money(item.selected * item.unitPrice)}
+              </div>
+            </div>
+
+            <button type="button"
+              data-drink-step="-1"
+              data-drink-item="${esc(item.id)}"
+              ${item.selected <= 0 ? 'disabled' : ''}>−</button>
+
+            <strong style="min-width:24px;text-align:center">
+              ${item.selected}
+            </strong>
+
+            <button type="button"
+              data-drink-step="1"
+              data-drink-item="${esc(item.id)}"
+              ${item.selected >= item.quantity ? 'disabled' : ''}>+</button>
+          </div>
+        `).join('')}
+      </div>
+
+      <div style="margin-top:16px">
+        <label for="drinkPaymentMethod">
+          Zahlungsart dieser Person
+        </label>
+        <select id="drinkPaymentMethod">
+          <option value="Bar">Bar</option>
+          <option value="TWINT">TWINT</option>
+        </select>
+      </div>
+
+      <div class="actions" style="margin-top:14px">
+        <button type="button"
+          data-drink-pay="true"
+          ${selectedTotal <= 0 ? 'disabled' : ''}>
+          Zahlung bestätigen · ${money(selectedTotal)}
+        </button>
+      </div>
+
+      <p class="foot">
+        Erst nach tatsächlichem Zahlungseingang bestätigen.
+        Der offene Betrag wird danach neu geladen.
+      </p>
+    </article>
+  `;
+
+  container.onclick = async event => {
+    const stepButton = event.target.closest('[data-drink-step]');
+
+    if (stepButton) {
+      const id = String(stepButton.dataset.drinkItem);
+      const line = lines.find(item => item.id === id);
+
+      if (!line) return;
+
+      const step = Number(stepButton.dataset.drinkStep);
+
+      const next = Math.max(
+        0,
+        Math.min(line.quantity, line.selected + step)
+      );
+
+      if (next === 0) {
+        drinkPaymentSelection.delete(id);
+      } else {
+        drinkPaymentSelection.set(id, next);
+      }
+
+      renderDrinkPayments();
+      return;
+    }
+
+    const payButton = event.target.closest('[data-drink-pay]');
+
+    if (!payButton || payButton.disabled) return;
+
+    const selectedItems = lines
+      .filter(item => item.selected > 0)
+      .map(item => ({
+        order_item_id: Number(item.id),
+        quantity: item.selected
+      }));
+
+    if (!selectedItems.length) {
+      say('Bitte zuerst Artikel auswählen.', true);
+      return;
+    }
+
+    const paymentMethod = $('drinkPaymentMethod')?.value;
+
+    const amount = selectedItems.reduce((sum, item) => {
+      const line = lines.find(
+        x => x.id === String(item.order_item_id)
+      );
+
+      return sum + item.quantity * (line?.unitPrice || 0);
+    }, 0);
+
+    if (!confirm(
+      `${paymentMethod} bestätigen?\n\n` +
+      `Tisch ${table}\nBetrag: ${money(amount)}`
+    )) return;
+
+    const originalText = payButton.textContent;
+    payButton.disabled = true;
+    payButton.textContent = 'Zahlung wird gespeichert …';
+
+    try {
+      const { data, error } = await sb.rpc(
+        'register_drink_payment_batch',
+        {
+          p_items: selectedItems,
+          p_payment_method: paymentMethod
+        }
+      );
+
+      if (error) throw error;
+
+      const result = Array.isArray(data) ? data[0] : data;
+
+      drinkPaymentSelection.clear();
+
+      await refreshOrders();
+
+      say(
+        `Zahlung von ${
+          money(Number(result?.paid_amount ?? amount))
+        } erfasst. Noch offen am Tisch: ${
+          money(Number(result?.remaining_amount ?? 0))
+        }.`,
+        false
+      );
+
+    } catch (e) {
+      console.error('Artikelzahlung fehlgeschlagen:', e);
+
+      say(
+        'Zahlung konnte nicht gespeichert werden: ' + e.message,
+        true
+      );
+
+      payButton.disabled = false;
+      payButton.textContent = originalText;
+    }
+  };
+}
+
+// Beim Tischwechsel Auswahl der vorherigen Person zurücksetzen
+$('tableNumber')?.addEventListener('change', () => {
+  drinkPaymentSelection.clear();
+  renderDrinkPayments();
+});
+
+
+
+
+
+
   
 
 
@@ -983,42 +1582,78 @@ function renderOrders() {
       (!hasBar || isDone(o.bar_status));
   });
 
-  runnerList.innerHTML = ready.length
-    ? ready.map(o => `
-        <article class="order">
-          <h3>Bestellung #${esc(String(o.order_no ?? o.id))}</h3>
-          <p><strong>Tisch ${esc(String(
-            o.table_number ?? o.table_no ?? '?'
-          ))}</strong></p>
-          <ul>
-            ${(o.order_items || []).map(i => `
-              <li>${esc(String(i.quantity))} ×
-                ${esc(String(i.name_snapshot || i.name || 'Artikel'))}
-              </li>
-            `).join('')}
-          </ul>
+runnerList.innerHTML = ready.length
+  ? ready.map(o => `
+      <article class="order">
+        <h3>Bestellung #${esc(String(o.order_no ?? o.id))}</h3>
+
+        <p><strong>Tisch ${esc(String(
+          o.table_number ?? o.table_no ?? '?'
+        ))}</strong></p>
+
+        <ul>
+          ${(o.order_items || []).map(i => `
+            <li>${esc(String(i.quantity))} ×
+              ${esc(String(i.name_snapshot || i.name || 'Artikel'))}
+            </li>
+          `).join('')}
+        </ul>
+
+        <div class="actions">
+          <button type="button"
+            data-runner-start="${esc(String(o.id))}"
+            ${o.runner_status === 'in_delivery' ? 'disabled' : ''}>
+            ${o.runner_status === 'in_delivery'
+              ? 'In Auslieferung'
+              : 'In Auslieferung übernehmen'}
+          </button>
+
           <button type="button" class="warn"
             data-deliver="${esc(String(o.id))}">
             Ausgeliefert
           </button>
-        </article>
-      `).join('')
-    : '<p class="muted">Keine fertigen Bestellungen zum Ausliefern.</p>';
+        </div>
+      </article>
+    `).join('')
+  : '<p class="muted">Keine fertigen Bestellungen zum Ausliefern.</p>';
 
-  runnerList.querySelectorAll('[data-deliver]').forEach(button => {
-    button.addEventListener('click', async () => {
-      button.disabled = true;
-      try {
-        await markOrderDelivered(button.dataset.deliver);
-      } catch (e) {
-        button.disabled = false;
-        say('Auslieferung fehlgeschlagen: ' + e.message, true);
-      }
-    });
+// Bestellung als ausgeliefert markieren
+runnerList.querySelectorAll('[data-deliver]').forEach(button => {
+  button.addEventListener('click', async () => {
+    button.disabled = true;
+
+    try {
+      await markOrderDelivered(button.dataset.deliver);
+    } catch (e) {
+      button.disabled = false;
+      say('Auslieferung fehlgeschlagen: ' + e.message, true);
+    }
   });
-}
+});
 
+// Bestellung in Auslieferung übernehmen
+runnerList.querySelectorAll('[data-runner-start]').forEach(button => {
+  button.addEventListener('click', async () => {
+    button.disabled = true;
 
+    try {
+      const { error } = await sb.rpc('set_runner_status', {
+        p_order_id: Number(button.dataset.runnerStart),
+        p_status: 'in_delivery'
+      });
+
+      if (error) throw error;
+
+      await refreshOrders();
+      say('Bestellung ist jetzt in Auslieferung.');
+    } catch (e) {
+      button.disabled = false;
+      say('Status konnte nicht gespeichert werden: ' + e.message, true);
+    }
+  });
+});
+
+} // Ende der Funktion renderOrders()
 
 
 
@@ -1257,33 +1892,108 @@ async function setStatus(id, status) {
   
 
   async function addMenuItem(){const name=$('menuName').value.trim(),category=$('menuCategory').value,price=Number($('menuPrice').value);if(!name||!Number.isFinite(price)||price<0){say('Bitte Name und gültigen Preis erfassen.',true);return;}try{const {error}=await sb.from('menu_items').insert({name,category,price,active:true});if(error)throw error;$('menuName').value='';$('menuPrice').value='';await loadMenu();await loadAdmin();say('Artikel hinzugefügt.');}catch(e){say('Artikel konnte nicht gespeichert werden: '+e.message,true);}}
-async function loadAdmin(){try{const {data,error}=await sb.from('menu_items').select('id,name,category,price,active').order('category').order('name');if(error)throw error;$('adminMenuList').innerHTML=`<table class="table"><thead><tr><th>Artikel</th><th>Kategorie</th><th>Preis</th><th>Aktiv</th><th></th></tr></thead><tbody>${(data||[]).map(m=>`<tr><td>${esc(m.name)}</td><td>${esc(m.category)}</td><td>${money(m.price)}</td><td>${m.active?'Ja':'Nein'}</td>
 
 
 
-<td>
-  <button
-    class="secondary"
-    data-toggle-menu="${m.id}"
-    data-active="${m.active}">
-    ${m.active ? 'Deaktivieren' : 'Aktivieren'}
-  </button>
 
-  <button
-    class="danger"
-    data-delete-menu="${m.id}">
-    Löschen
-  </button>
-</td>
-</tr>`).join('')}</tbody></table>`;$('adminMenuList')
-.querySelectorAll('[data-toggle-menu]')
+async function loadAdmin() {
+  try {
+    const { data, error } = await sb
+      .from('menu_items')
+      .select('id,name,category,price,active')
+      .order('category')
+      .order('name');
 
-.forEach(b=>b.addEventListener('click',()=>toggleMenu(b.dataset.toggleMenu,b.dataset.active==='true')));}catch(e){say('Administration konnte nicht geladen werden: '+e.message,true);}}
+    if (error) throw error;
+
+    $('adminMenuList').innerHTML = `
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Artikel</th>
+            <th>Kategorie</th>
+            <th>Preis</th>
+            <th>Aktiv</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${(data || []).map(m => `
+            <tr>
+              <td>${esc(m.name)}</td>
+              <td>${esc(m.category)}</td>
+              <td>${money(m.price)}</td>
+              <td>${m.active ? 'Ja' : 'Nein'}</td>
+              <td>
+                <button
+                  type="button"
+                  class="secondary"
+                  data-toggle-menu="${m.id}"
+                  data-active="${m.active}">
+                  ${m.active ? 'Deaktivieren' : 'Aktivieren'}
+                </button>
+
+                <button
+                  type="button"
+                  class="danger"
+                  data-delete-menu="${m.id}">
+                  Löschen
+                </button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+
+    // Aktivieren und Deaktivieren
+    $('adminMenuList')
+      .querySelectorAll('[data-toggle-menu]')
+      .forEach(b => {
+        b.addEventListener('click', async () => {
+          b.disabled = true;
+
+          try {
+            await toggleMenu(
+              b.dataset.toggleMenu,
+              b.dataset.active === 'true'
+            );
+          } finally {
+            b.disabled = false;
+          }
+        });
+      });
+
+    // Menüartikel löschen
+    $('adminMenuList')
+      .querySelectorAll('[data-delete-menu]')
+      .forEach(b => {
+        b.addEventListener('click', async () => {
+          await deleteMenuItem(b.dataset.deleteMenu);
+        });
+      });
+
+  } catch (e) {
+    console.error('loadAdmin:', e);
+    say(
+      'Administration konnte nicht geladen werden: ' + e.message,
+      true
+    );
+  }
+}
+
+
 
 
 
 async function deleteMenuItem(id) {
-  if (!confirm('Diesen Artikel endgültig löschen?')) return;
+  // Nur Admins dürfen Menüartikel löschen
+  if (!profile || profile.role !== 'admin') {
+    say('Keine Berechtigung: Nur Admins dürfen Menüartikel löschen.', true);
+    return;
+  }
+
+  if (!confirm('Diesen Menüartikel endgültig löschen?')) return;
 
   try {
     const { error } = await sb
@@ -1295,8 +2005,10 @@ async function deleteMenuItem(id) {
 
     await loadMenu();
     await loadAdmin();
+
     say('Menüartikel wurde gelöscht.');
   } catch (e) {
+    console.error('deleteMenuItem:', e);
     say('Menüartikel konnte nicht gelöscht werden: ' + e.message, true);
   }
 }
@@ -1329,7 +2041,65 @@ async function toggleMenu(id, active) {
 
 
 async function calculateClosing(){const date=$('closingDate').value;if(!date){say('Bitte ein Datum auswählen.',true);return null;}try{const {data,error}=await sb.rpc('get_day_summary',{p_business_date:date});if(error)throw error;const d=Array.isArray(data)?data[0]:data;if(!d)throw new Error('Keine Abrechnung erhalten.');$('closingSummary').innerHTML=`<div class="totals"><div class="totalbox">Umsatz Bestellungen<strong>${money(d.total_sales)}</strong></div><div class="totalbox">Bar bezahlt<strong>${money(d.cash_total)}</strong></div><div class="totalbox">TWINT bezahlt<strong>${money(d.twint_total)}</strong></div><div class="totalbox">Noch offen<strong>${money(d.open_amount)}</strong></div><div class="totalbox">Anzahl Bestellungen<strong>${Number(d.order_count||0)}</strong></div></div>`;return d;}catch(e){say('Abrechnung konnte nicht berechnet werden: '+e.message,true);return null;}}
-async function saveClosing(){const summary=await calculateClosing();if(!summary)return;if(Number(summary.open_amount)>0&&!confirm('Es sind noch offene Zahlungen vorhanden. Tagesabschluss trotzdem speichern?'))return;if(!confirm('Tagesabschluss für '+$('closingDate').value+' endgültig speichern?'))return;try{const {error}=await sb.rpc('close_business_day',{p_business_date:$('closingDate').value,p_notes:$('closingNotes').value.trim()});if(error)throw error;say('Tagesabschluss gespeichert.');await loadClosingHistory();}catch(e){say('Tagesabschluss konnte nicht gespeichert werden: '+e.message,true);}}
+
+
+
+async function saveClosing() {
+  const summary = await calculateClosing();
+  if (!summary) return;
+
+  const closingDate = $('closingDate').value;
+
+  if (!closingDate) {
+    say('Bitte ein Abschlussdatum auswählen.', true);
+    return;
+  }
+
+  if (
+    Number(summary.open_amount) > 0 &&
+    !confirm(
+      'Es sind noch offene Zahlungen vorhanden. ' +
+      'Tagesabschluss trotzdem speichern?'
+    )
+  ) {
+    return;
+  }
+
+  if (
+    !confirm(
+      'Tagesabschluss für ' + closingDate +
+      ' endgültig speichern?'
+    )
+  ) {
+    return;
+  }
+
+  try {
+    const { error } = await sb.rpc('close_business_day', {
+      p_business_date: closingDate,
+      p_notes: $('closingNotes').value.trim()
+    });
+
+    if (error) throw error;
+
+    say('Tagesabschluss gespeichert.');
+
+    await loadClosingHistory();
+
+    // Noch KEIN automatisches Löschen:
+    // reset_today_orders() löscht alle heutigen Bestellungen,
+    // unabhängig vom ausgewählten Abschlussdatum.
+  } catch (e) {
+    say(
+      'Tagesabschluss konnte nicht gespeichert werden: ' + e.message,
+      true
+    );
+  }
+}
+
+
+
+
 async function loadClosingHistory(){try{const {data,error}=await sb.from('day_closings').select('business_date,closed_at,closed_by,total_sales,cash_total,twint_total,open_amount,order_count,notes').order('business_date',{ascending:false}).limit(30);if(error)throw error;$('closingHistory').innerHTML='<h3>Letzte Tagesabschlüsse</h3>'+(data?.length?`<table class="table"><thead><tr><th>Datum</th><th>Umsatz</th><th>Bar</th><th>TWINT</th><th>Offen</th><th>Gespeichert</th></tr></thead><tbody>${data.map(d=>`<tr><td>${esc(d.business_date)}</td><td>${money(d.total_sales)}</td><td>${money(d.cash_total)}</td><td>${money(d.twint_total)}</td><td>${money(d.open_amount)}</td><td>${new Date(d.closed_at).toLocaleString('de-CH')}</td></tr>`).join('')}</tbody></table>`:'<p class="muted">Noch keine Tagesabschlüsse.</p>');}catch(e){say('Tagesabschluss-Historie konnte nicht geladen werden: '+e.message,true);}}
 
 
@@ -1355,14 +2125,29 @@ async function logout() {
 
 
 async function loadProfile() {
+  const { data, error } = await sb
+    .from('profiles')
+    .select('id, email, display_name, role')
+    .eq('id', currentUser.id)
+    .single();
+
+  if (error) {
+    throw new Error('Benutzerprofil konnte nicht geladen werden: ' + error.message);
+  }
+
+  if (!data) {
+    throw new Error('Kein Benutzerprofil gefunden.');
+  }
+
   profile = {
-    id: currentUser.id,
-    email: currentUser.email || '',
+    id: data.id,
+    email: data.email || currentUser.email || '',
     display_name:
-      currentUser.user_metadata?.display_name ||
+      data.display_name ||
+      data.email ||
       currentUser.email ||
       'Angemeldeter Benutzer',
-    role: 'all'
+    role: String(data.role || '').trim().toLowerCase()
   };
 }
 
