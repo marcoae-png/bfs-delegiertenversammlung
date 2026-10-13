@@ -168,6 +168,25 @@ function firstTab(){return 'service';}
 
 
 
+
+
+function allowed(tab) {
+  return [
+    'service',
+    'orders',
+    'runner',
+    'closing',
+    'admin'
+  ].includes(tab);
+}
+
+
+
+
+
+
+
+  
 function renderTabs() {
   const all = [
     ['service', 'Neue Bestellung'],
