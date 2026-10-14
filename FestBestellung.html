@@ -1020,28 +1020,54 @@ button[data-edit-menu]:disabled {
 <div class="grid"><div><label for="projectUrl">Supabase Project URL</label><input id="projectUrl" value="https://mkdsxgckckzxqaupilrp.supabase.co" placeholder="https://xxxxxxxx.supabase.co" autocomplete="url"></div><div><label for="anonKey">Public anon/publishable key</label><input id="anonKey" value="sb_publishable_dDoTEWtrcI8ulfVD4UiZZg_JsirepVu" placeholder="eyJ... oder sb_publishable_..." autocomplete="off"></div></div>
 <div class="actions" style="margin-top:12px"><button id="saveConfigBtn" type="button">Verbindung speichern</button><button id="testConfigBtn" class="secondary" type="button">Verbindung testen</button></div><p class="foot">URL und öffentlicher Key werden nach dem Speichern in diesem Browser gemerkt. Bestelldaten liegen zentral in Supabase und sind nach Anmeldung auf allen verbundenen Geräten verfügbar. Auf gemeinsam genutzten Geräten nach dem Einsatz abmelden.</p>
 </section>
-<section id="loginPanel" class="panel hidden"><h2 class="section-title">Anmelden</h2><div class="grid"><div><label for="email">E-Mail</label><input id="email" type="email" autocomplete="username"></div><div><label for="password">Passwort</label>
 
+<section id="loginPanel" class="panel hidden">
+  <h2 class="section-title">Anmelden</h2>
 
+  <div class="grid">
+    <div>
+      <label for="loginRole">Dein Arbeitsbereich</label>
+      <select id="loginRole">
+        <option value="service">Service</option>
+        <option value="kitchen">Küche</option>
+        <option value="bar">Theke / Ausschank</option>
+        <option value="runner">Läufer</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
 
-<div class="password-wrap">
-  <input id="password" type="password" autocomplete="current-password">
-  <button
-    id="togglePassword"
-    class="password-toggle"
-    type="button"
-    aria-label="Passwort anzeigen"
-    title="Passwort anzeigen">
-    👁
-  </button>
-</div>
+    <div>
+      <label id="loginPasswordLabel" for="password">
+        Mitarbeiterpasswort
+      </label>
 
+      <div class="password-wrap">
+        <input
+          id="password"
+          type="password"
+          autocomplete="current-password"
+          required
+        >
+        <button
+          id="togglePassword"
+          class="password-toggle"
+          type="button"
+          aria-label="Passwort anzeigen"
+          title="Passwort anzeigen"
+        >👁</button>
+      </div>
+    </div>
+  </div>
 
+  <div class="actions" style="margin-top:12px">
+    <button id="loginBtn" type="button">Anmelden</button>
+  </div>
 
-</div></div><div class="actions" style="margin-top:12px"><button id="loginBtn" type="button">Anmelden</button></div><p class="muted">**Herzlich willkommen auf der Bestellseite für die BFS-Delegiertenversammlung vom 21. November 2026!**</p></section>
-<section id="appPanel" class="hidden">
-<div id="notice" class="msg hidden" role="status"></div>
-<nav class="tabs" id="tabs"></nav>
+  <p class="muted">
+    Herzlich willkommen auf der Bestellseite für die
+    BFS-Delegiertenversammlung vom 21. November 2026!
+  </p>
+</section>
 
 
 
@@ -1284,12 +1310,64 @@ function setConfigUI(c){$('projectUrl').value=c?.url||'https://mkdsxgckckzxqaupi
 function validConfig(c){return /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(c.url) && c.key.length>20;}
 async function initConnection(){const c=getConfig();if(!validConfig(c)){say('Bitte eine gültige Supabase-URL und den öffentlichen anon/publishable Key eingeben.',true);return false;}sb=window.supabase.createClient(c.url,c.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});try{const {error}=await sb.auth.getSession();if(error)throw error;localStorage.setItem(CONFIG_KEY,JSON.stringify(c));$('configPanel').classList.add('hidden');$('loginPanel').classList.remove('hidden');return true;}catch(e){say('Verbindung fehlgeschlagen: '+e.message,true);return false;}}
 async function connectTest(){const c=getConfig();if(!validConfig(c)){say('Bitte URL und Public Key korrekt eintragen.',true);return;}const test=window.supabase.createClient(c.url,c.key);const {error}=await test.auth.getSession();if(error)say('Verbindungstest fehlgeschlagen: '+error.message,true);else say('Supabase ist erreichbar. Anmeldung benötigt ein gültiges Benutzerkonto.');}
-async function loadProfile(){profile={id:currentUser.id,email:currentUser.email||'',display_name:currentUser.user_metadata?.display_name||currentUser.email||'Angemeldeter Benutzer',role:'all'};}
+
+async function loadProfile() {
+  const { data, error } = await sb
+    .from('profiles')
+    .select('id, email, display_name, role')
+    .eq('id', currentUser.id)
+    .single();
+
+  if (error) throw error;
+  if (!data) {
+    throw new Error('Kein Benutzerprofil gefunden.');
+  }
+
+  profile = {
+    id: data.id,
+    email: data.email || currentUser.email || '',
+    display_name:
+      data.display_name ||
+      currentUser.user_metadata?.display_name ||
+      data.email ||
+      currentUser.email ||
+      'Angemeldeter Benutzer',
+    role: String(data.role || '').trim().toLowerCase()
+  };
+
+  const erlaubteRollen = [
+    'admin',
+    'service',
+    'kitchen',
+    'bar',
+    'runner',
+    'closing'
+  ];
+
+  if (!erlaubteRollen.includes(profile.role)) {
+    profile = null;
+    throw new Error('Ungültige oder fehlende Benutzerrolle.');
+  }
+}
 
 
 
 async function onSignedIn(user){currentUser=user;try{await loadProfile();$('loginPanel').classList.add('hidden');$('appPanel').classList.remove('hidden');$('logoutBtn').classList.remove('hidden');$('userLabel').textContent=profile.display_name||profile.email||user.email;renderTabs();await loadMenu();await refreshOrders();await loadAdmin();await loadClosingHistory();showTab(firstTab());}catch(e){say('Daten konnten nicht geladen werden: '+e.message+' — bitte Supabase-Berechtigungen prüfen.',true);}}
-function firstTab(){return 'service';}
+
+function firstTab() {
+  const reihenfolge = [
+    'service',
+    'orders',
+    'bar',
+    'runner',
+    'closing',
+    'admin'
+  ];
+
+  return reihenfolge.find(tab => allowed(tab)) || 'service';
+}
+
+
 
 
 
@@ -1297,15 +1375,18 @@ function firstTab(){return 'service';}
 
 
 function allowed(tab) {
-  return [
-    'service',
-    'orders',
-    'bar',
-    'runner',
-    'closing',
-    'admin'
-  ].includes(tab);
+  const rechte = {
+    admin:   ['service', 'orders', 'bar', 'runner', 'closing', 'admin'],
+    service: ['service'],
+    kitchen: ['orders'],
+    bar:     ['bar'],
+    runner:  ['runner'],
+    closing: ['closing']
+  };
+
+  return rechte[profile?.role]?.includes(tab) ?? false;
 }
+
 
 
 
@@ -2956,20 +3037,84 @@ onClickIfExists('saveConfigBtn', async () => {
 
 onClickIfExists('testConfigBtn', connectTest);
 
+
+const festBestellungKonten = {
+  service: 'festbestellung.service@deine-domain.ch',
+  kitchen: 'festbestellung.kueche@deine-domain.ch',
+  bar: 'festbestellung.theke@deine-domain.ch',
+  runner: 'festbestellung.laeufer@deine-domain.ch',
+  admin: 'marco.ae87@gmail.com'
+};
+
+const loginRole = $('loginRole');
+const loginPasswordLabel = $('loginPasswordLabel');
+
+function loginPasswortBeschriftungAktualisieren() {
+  if (!loginRole || !loginPasswordLabel) return;
+
+  loginPasswordLabel.textContent =
+    loginRole.value === 'admin'
+      ? 'Admin-Passwort'
+      : 'Mitarbeiterpasswort';
+}
+
+loginRole?.addEventListener(
+  'change',
+  loginPasswortBeschriftungAktualisieren
+);
+
+loginPasswortBeschriftungAktualisieren();
+
 onClickIfExists('loginBtn', async () => {
   if (!sb && !(await initConnection())) return;
 
+  const rolle = $('loginRole')?.value;
+  const passwort = $('password')?.value || '';
+  const email = festBestellungKonten[rolle];
+
+  if (!email) {
+    say('Bitte einen Arbeitsbereich auswählen.', true);
+    return;
+  }
+
+  if (!passwort.trim()) {
+    say('Bitte das Passwort eingeben.', true);
+    return;
+  }
+
+  const button = $('loginBtn');
+  if (button) button.disabled = true;
+
   try {
     const { data, error } = await sb.auth.signInWithPassword({
-      email: $('email').value.trim(),
-      password: $('password').value
+      email,
+      password: passwort
     });
 
     if (error) throw error;
 
+    // Das echte Profil aus Supabase laden und Rolle prüfen.
+    currentUser = data.user;
+    await loadProfile();
+
+    if (profile.role !== rolle) {
+      await sb.auth.signOut();
+      currentUser = null;
+      profile = null;
+
+      throw new Error(
+        'Die ausgewählte Rolle stimmt nicht mit dem Supabase-Profil überein.'
+      );
+    }
+
+    $('password').value = '';
     await onSignedIn(data.user);
+
   } catch (e) {
+    console.error('Login-Fehler:', e);
     say('Anmeldung fehlgeschlagen: ' + e.message, true);
+  } finally {
+    if (button) button.disabled = false;
   }
 });
 
@@ -3085,7 +3230,7 @@ window.addEventListener('load', function () {
     setTimeout(function () {
       splash.remove();
     }, 400);
-  }, 1250);
+  }, 1150);
 });
 
 
