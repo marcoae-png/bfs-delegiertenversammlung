@@ -639,6 +639,73 @@ header .actions {
 }
 
 
+
+
+
+.station-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.pending-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: #c62828;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.pending-count.zero {
+  background: #388e3c;
+}
+
+
+
+button[data-edit-menu] {
+  background-color: #f57c00;
+  color: #ffffff;
+  border: 1px solid #e66d00;
+}
+
+button[data-edit-menu]:hover {
+  background-color: #e66d00;
+}
+
+button[data-edit-menu]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+
+#tableNumber {
+  width: 100%;
+  min-height: 50px;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 10px 14px;
+  border: 2px solid #4f8a45;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #222222;
+  cursor: pointer;
+}
+
+
+
+
+
 </style>
 </head>
 <body>
@@ -754,21 +821,33 @@ header .actions {
 
 
 <section id="ordersView" class="panel hidden">
-  <h2>Bestellungen Küche</h2>
+  <h2 class="station-heading">
+    <span>Bestellungen Küche</span>
+    <span id="kitchenPendingCount" class="pending-count zero">0</span>
+  </h2>
+
   <div id="ordersList">
     <p class="muted">Bestellungen werden geladen …</p>
   </div>
 </section>
 
 <section id="barView" class="panel hidden">
-  <h2>Bestellungen Theke / Ausschank</h2>
+  <h2 class="station-heading">
+    <span>Bestellungen Theke / Ausschank</span>
+    <span id="barPendingCount" class="pending-count zero">0</span>
+  </h2>
+
   <div id="barList">
     <p class="muted">Getränkebestellungen werden geladen …</p>
   </div>
 </section>
 
 <section id="runnerView" class="panel hidden">
-  <h2>Bereit zum Ausliefern</h2>
+  <h2 class="station-heading">
+    <span>Bereit zum Ausliefern</span>
+    <span id="runnerPendingCount" class="pending-count zero">0</span>
+  </h2>
+
   <p class="muted">
     Hier erscheinen Bestellungen, sobald Küche und Theke fertig sind.
   </p>
@@ -797,52 +876,116 @@ header .actions {
 <section id="adminView" class="panel hidden">
   <h2 class="section-title">Administration</h2>
 
-  <h3>Menüartikel</h3>
+
+<h3>Menüartikel</h3>
+
+<div class="grid">
+  <div>
+    <label for="menuName">Artikelname</label>
+    <input id="menuName" placeholder="z. B. Bratwurst">
+  </div>
+
+  <div>
+    <label for="menuCategory">Kategorie</label>
+    <select id="menuCategory">
+      <option>Essen</option>
+      <option>Getränke</option>
+      <option>Dessert</option>
+      <option>Sonstiges</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="menuPrice">Preis in CHF</label>
+    <input
+      id="menuPrice"
+      type="number"
+      min="0"
+      step="0.05"
+      placeholder="8.50"
+    >
+  </div>
+</div>
+
+<div class="actions" style="margin:10px 0 18px">
+  <button id="addMenuBtn" type="button">
+    Artikel hinzufügen
+  </button>
+</div>
+
+<!-- Bearbeitungsformular oben über der Artikelliste -->
+<div id="editMenuForm" class="panel hidden">
+  <h3>Menüartikel bearbeiten</h3>
+
+  <input type="hidden" id="editMenuId">
 
   <div class="grid">
     <div>
-      <label for="menuName">Artikelname</label>
-      <input id="menuName" placeholder="z. B. Bratwurst">
+      <label for="editMenuName">Artikelname</label>
+      <input
+        type="text"
+        id="editMenuName"
+        placeholder="Artikelname"
+        required
+      >
     </div>
 
     <div>
-      <label for="menuCategory">Kategorie</label>
-      <select id="menuCategory">
-        <option>Essen</option>
-        <option>Getränke</option>
-        <option>Dessert</option>
-        <option>Sonstiges</option>
+      <label for="editMenuCategory">Kategorie</label>
+      <select id="editMenuCategory" required>
+        <option value="Essen">Essen</option>
+        <option value="Getränke">Getränke</option>
+        <option value="Dessert">Dessert</option>
+        <option value="Sonstiges">Sonstiges</option>
       </select>
     </div>
 
     <div>
-      <label for="menuPrice">Preis in CHF</label>
-      <input id="menuPrice" type="number" min="0" step="0.05" placeholder="8.50">
+      <label for="editMenuPrice">Preis in CHF</label>
+      <input
+        type="number"
+        id="editMenuPrice"
+        min="0"
+        step="0.05"
+        required
+      >
     </div>
   </div>
 
-  <div class="actions" style="margin:10px 0 18px">
-    <button id="addMenuBtn" type="button">Artikel hinzufügen</button>
+  <div class="actions" style="margin-top:10px">
+    <button type="button" id="saveMenuEdit">
+      Speichern
+    </button>
+
+    <button
+      type="button"
+      id="cancelMenuEdit"
+      class="secondary">
+      Abbrechen
+    </button>
   </div>
+</div>
 
-  <div id="adminMenuList"></div>
+<!-- Artikelliste nur einmal vorhanden -->
+<div id="adminMenuList"></div>
 
-  <hr style="margin:28px 0;border:0;border-top:1px solid #d8e1da">
+<hr style="margin:28px 0;border:0;border-top:1px solid #d8e1da">
 
-  <h3>Bestellungen zurücksetzen</h3>
-  <p class="muted">
-    Löscht alle heutigen Bestellungen einschliesslich Positionen.
-    Menüartikel bleiben erhalten.
-  </p>
+<h3>Bestellungen zurücksetzen</h3>
 
-  <button
-    type="button"
-    id="resetTodayOrdersBtn"
-    class="danger">
-    Heutige Bestellungen zurücksetzen
-  </button>
+<p class="muted">
+  Löscht alle heutigen Bestellungen einschliesslich Positionen.
+  Menüartikel bleiben erhalten.
+</p>
 
+<button
+  type="button"
+  id="resetTodayOrdersBtn"
+  class="danger">
+  Heutige Bestellungen zurücksetzen
+</button>
 </section>
+
 <div class="foot">FestBestellung · Bei vertraulichen Daten nur mit persönlichen Benutzerkonten und aktivierten Datenbankrichtlinien verwenden.</div>
 </main>
 <script>
@@ -881,6 +1024,16 @@ function allowed(tab) {
     'closing',
     'admin'
   ].includes(tab);
+}
+
+
+
+function updatePendingCounter(elementId, count) {
+  const counter = document.getElementById(elementId);
+  if (!counter) return;
+
+  counter.textContent = String(count);
+  counter.classList.toggle('zero', count === 0);
 }
 
 
@@ -1646,10 +1799,14 @@ function renderOrders() {
   if (ordersList) {
     const kitchenOrders = orders.filter(o => {
       const items = (o.order_items || []).filter(i => !isDrink(i));
+
       return items.length > 0 &&
         (!isDone(o.kitchen_status) ||
          recentlyDone.has('kitchen-' + String(o.id)));
     });
+
+    // Zähler Küche
+    updatePendingCounter('kitchenPendingCount', kitchenOrders.length);
 
     ordersList.innerHTML = kitchenOrders.length
       ? kitchenOrders.map(o => stationOrderHTML(o, 'kitchen')).join('')
@@ -1666,10 +1823,14 @@ function renderOrders() {
   if (barList) {
     const barOrders = orders.filter(o => {
       const items = (o.order_items || []).filter(isDrink);
+
       return items.length > 0 &&
         (!isDone(o.bar_status) ||
          recentlyDone.has('bar-' + String(o.id)));
     });
+
+    // Zähler Theke
+    updatePendingCounter('barPendingCount', barOrders.length);
 
     barList.innerHTML = barOrders.length
       ? barOrders.map(o => stationOrderHTML(o, 'bar')).join('')
@@ -1679,7 +1840,7 @@ function renderOrders() {
   }
 
   // =========================
-  // LÄUFER: erst wenn alle Stationen fertig sind
+  // LÄUFER: fertige Bestellungen
   // =========================
   const runnerList = $('runnerList');
 
@@ -1698,86 +1859,86 @@ function renderOrders() {
       (!hasBar || isDone(o.bar_status));
   });
 
-console.log('Läuferstatus:', ready.map(o => ({
-  id: o.id,
-  status: o.runner_status
-})));
-  
-runnerList.innerHTML = ready.length
-  ? 
-ready.map(o => `
-      <article class="order ${o.runner_status === 'in_delivery' ? 'in-delivery' : ''}">
+  // Zähler Läufer
+  updatePendingCounter('runnerPendingCount', ready.length);
 
-        <h3>Bestellung #${esc(String(o.order_no ?? o.id))}</h3>
+  console.log('Läuferstatus:', ready.map(o => ({
+    id: o.id,
+    status: o.runner_status
+  })));
 
-        <p><strong>Tisch ${esc(String(
-          o.table_number ?? o.table_no ?? '?'
-        ))}</strong></p>
+  runnerList.innerHTML = ready.length
+    ? ready.map(o => `
+        <article class="order ${o.runner_status === 'in_delivery' ? 'in-delivery' : ''}">
 
-        <ul>
-          ${(o.order_items || []).map(i => `
-            <li>${esc(String(i.quantity))} ×
-              ${esc(String(i.name_snapshot || i.name || 'Artikel'))}
-            </li>
-          `).join('')}
-        </ul>
+          <h3>Bestellung #${esc(String(o.order_no ?? o.id))}</h3>
 
-        <div class="actions">
-          <button type="button"
-            data-runner-start="${esc(String(o.id))}"
-            ${o.runner_status === 'in_delivery' ? 'disabled' : ''}>
-            ${o.runner_status === 'in_delivery'
-              ? 'In Auslieferung'
-              : 'In Auslieferung übernehmen'}
-          </button>
+          <p><strong>Tisch ${esc(String(
+            o.table_number ?? o.table_no ?? '?'
+          ))}</strong></p>
 
-          <button type="button" class="warn"
-            data-deliver="${esc(String(o.id))}">
-            Ausgeliefert
-          </button>
-        </div>
-      </article>
-    `).join('')
-  : '<p class="muted">Keine fertigen Bestellungen zum Ausliefern.</p>';
+          <ul>
+            ${(o.order_items || []).map(i => `
+              <li>${esc(String(i.quantity))} ×
+                ${esc(String(i.name_snapshot || i.name || 'Artikel'))}
+              </li>
+            `).join('')}
+          </ul>
 
-// Bestellung als ausgeliefert markieren
-runnerList.querySelectorAll('[data-deliver]').forEach(button => {
-  button.addEventListener('click', async () => {
-    button.disabled = true;
+          <div class="actions">
+            <button type="button"
+              data-runner-start="${esc(String(o.id))}"
+              ${o.runner_status === 'in_delivery' ? 'disabled' : ''}>
+              ${o.runner_status === 'in_delivery'
+                ? 'In Auslieferung'
+                : 'In Auslieferung übernehmen'}
+            </button>
 
-    try {
-      await markOrderDelivered(button.dataset.deliver);
-    } catch (e) {
-      button.disabled = false;
-      say('Auslieferung fehlgeschlagen: ' + e.message, true);
-    }
+            <button type="button" class="warn"
+              data-deliver="${esc(String(o.id))}">
+              Ausgeliefert
+            </button>
+          </div>
+        </article>
+      `).join('')
+    : '<p class="muted">Keine fertigen Bestellungen zum Ausliefern.</p>';
+
+  // Bestellung als ausgeliefert markieren
+  runnerList.querySelectorAll('[data-deliver]').forEach(button => {
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+
+      try {
+        await markOrderDelivered(button.dataset.deliver);
+      } catch (e) {
+        button.disabled = false;
+        say('Auslieferung fehlgeschlagen: ' + e.message, true);
+      }
+    });
   });
-});
 
-// Bestellung in Auslieferung übernehmen
-runnerList.querySelectorAll('[data-runner-start]').forEach(button => {
-  button.addEventListener('click', async () => {
-    button.disabled = true;
+  // Bestellung in Auslieferung übernehmen
+  runnerList.querySelectorAll('[data-runner-start]').forEach(button => {
+    button.addEventListener('click', async () => {
+      button.disabled = true;
 
-    try {
-      const { error } = await sb.rpc('set_runner_status', {
-        p_order_id: Number(button.dataset.runnerStart),
-        p_status: 'in_delivery'
-      });
+      try {
+        const { error } = await sb.rpc('set_runner_status', {
+          p_order_id: Number(button.dataset.runnerStart),
+          p_status: 'in_delivery'
+        });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      await refreshOrders();
-      say('Bestellung ist jetzt in Auslieferung.');
-    } catch (e) {
-      button.disabled = false;
-      say('Status konnte nicht gespeichert werden: ' + e.message, true);
-    }
+        await refreshOrders();
+        say('Bestellung ist jetzt in Auslieferung.');
+      } catch (e) {
+        button.disabled = false;
+        say('Status konnte nicht gespeichert werden: ' + e.message, true);
+      }
+    });
   });
-});
-
-} // Ende der Funktion renderOrders()
-
+}
 
 
 
@@ -2018,7 +2179,6 @@ async function setStatus(id, status) {
 
 
 
-
 async function loadAdmin() {
   try {
     const { data, error } = await sb
@@ -2029,7 +2189,13 @@ async function loadAdmin() {
 
     if (error) throw error;
 
-    $('adminMenuList').innerHTML = `
+    const adminMenuList = $('adminMenuList');
+    if (!adminMenuList) {
+      console.error('HTML-Element #adminMenuList fehlt.');
+      return;
+    }
+
+    adminMenuList.innerHTML = `
       <table class="table">
         <thead>
           <tr>
@@ -2037,7 +2203,7 @@ async function loadAdmin() {
             <th>Kategorie</th>
             <th>Preis</th>
             <th>Aktiv</th>
-            <th></th>
+            <th>Aktionen</th>
           </tr>
         </thead>
         <tbody>
@@ -2051,7 +2217,14 @@ async function loadAdmin() {
                 <button
                   type="button"
                   class="secondary"
-                  data-toggle-menu="${m.id}"
+                  data-edit-menu="${esc(String(m.id))}">
+                  Bearbeiten
+                </button>
+
+                <button
+                  type="button"
+                  class="secondary"
+                  data-toggle-menu="${esc(String(m.id))}"
                   data-active="${m.active}">
                   ${m.active ? 'Deaktivieren' : 'Aktivieren'}
                 </button>
@@ -2059,7 +2232,7 @@ async function loadAdmin() {
                 <button
                   type="button"
                   class="danger"
-                  data-delete-menu="${m.id}">
+                  data-delete-menu="${esc(String(m.id))}">
                   Löschen
                 </button>
               </td>
@@ -2069,30 +2242,51 @@ async function loadAdmin() {
       </table>
     `;
 
+    // Menüartikel bearbeiten
+    adminMenuList
+      .querySelectorAll('[data-edit-menu]')
+      .forEach(button => {
+        button.addEventListener('click', async () => {
+          button.disabled = true;
+
+          try {
+            await editMenuItem(button.dataset.editMenu);
+          } finally {
+            button.disabled = false;
+          }
+        });
+      });
+
     // Aktivieren und Deaktivieren
-    $('adminMenuList')
+    adminMenuList
       .querySelectorAll('[data-toggle-menu]')
-      .forEach(b => {
-        b.addEventListener('click', async () => {
-          b.disabled = true;
+      .forEach(button => {
+        button.addEventListener('click', async () => {
+          button.disabled = true;
 
           try {
             await toggleMenu(
-              b.dataset.toggleMenu,
-              b.dataset.active === 'true'
+              button.dataset.toggleMenu,
+              button.dataset.active === 'true'
             );
           } finally {
-            b.disabled = false;
+            button.disabled = false;
           }
         });
       });
 
     // Menüartikel löschen
-    $('adminMenuList')
+    adminMenuList
       .querySelectorAll('[data-delete-menu]')
-      .forEach(b => {
-        b.addEventListener('click', async () => {
-          await deleteMenuItem(b.dataset.deleteMenu);
+      .forEach(button => {
+        button.addEventListener('click', async () => {
+          button.disabled = true;
+
+          try {
+            await deleteMenuItem(button.dataset.deleteMenu);
+          } finally {
+            button.disabled = false;
+          }
         });
       });
 
@@ -2104,7 +2298,6 @@ async function loadAdmin() {
     );
   }
 }
-
 
 
 
@@ -2135,6 +2328,103 @@ async function deleteMenuItem(id) {
     say('Menüartikel konnte nicht gelöscht werden: ' + e.message, true);
   }
 }
+
+
+
+
+
+
+
+
+async function editMenuItem(id) {
+  if (!profile || profile.role !== 'admin') {
+    say('Keine Berechtigung: Nur Admins dürfen Menüartikel bearbeiten.', true);
+    return;
+  }
+
+  try {
+    const { data: item, error } = await sb
+      .from('menu_items')
+      .select('id,name,category,price')
+      .eq('id', id)
+      .single();
+
+    if (error) throw error;
+
+    $('editMenuId').value = item.id;
+    $('editMenuName').value = item.name || '';
+    $('editMenuCategory').value = item.category || 'Essen';
+    $('editMenuPrice').value = item.price ?? 0;
+
+    $('editMenuForm').classList.remove('hidden');
+    $('editMenuName').focus();
+  } catch (e) {
+    console.error('editMenuItem:', e);
+    say('Menüartikel konnte nicht geladen werden: ' + e.message, true);
+  }
+}
+
+async function saveMenuEdit() {
+  if (!profile || profile.role !== 'admin') {
+    say('Keine Berechtigung: Nur Admins dürfen Menüartikel bearbeiten.', true);
+    return;
+  }
+
+  const id = $('editMenuId').value;
+  const name = $('editMenuName').value.trim();
+  const category = $('editMenuCategory').value;
+  const priceText = $('editMenuPrice').value.trim();
+  const price = Number(priceText);
+
+  if (!id || !name || priceText === '' ||
+      !Number.isFinite(price) || price < 0) {
+    say('Bitte Artikelname und einen gültigen Preis eingeben.', true);
+    return;
+  }
+
+  if (!['Essen', 'Getränke', 'Dessert', 'Sonstiges'].includes(category)) {
+    say('Ungültige Kategorie.', true);
+    return;
+  }
+
+  const saveButton = $('saveMenuEdit');
+  saveButton.disabled = true;
+
+  try {
+    const { error } = await sb
+      .from('menu_items')
+      .update({
+        name,
+        category,
+        price
+      })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    $('editMenuForm').classList.add('hidden');
+
+    await loadMenu();
+    await loadAdmin();
+
+    say('Menüartikel wurde aktualisiert.');
+  } catch (e) {
+    console.error('saveMenuEdit:', e);
+    say('Änderungen konnten nicht gespeichert werden: ' + e.message, true);
+  } finally {
+    saveButton.disabled = false;
+  }
+}
+
+function cancelMenuEdit() {
+  $('editMenuForm').classList.add('hidden');
+}
+
+$('saveMenuEdit').addEventListener('click', saveMenuEdit);
+$('cancelMenuEdit').addEventListener('click', cancelMenuEdit);
+
+
+
 
 
 
