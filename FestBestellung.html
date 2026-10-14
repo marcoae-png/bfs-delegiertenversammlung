@@ -703,7 +703,42 @@ button[data-edit-menu]:disabled {
 }
 
 
+.payment-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translate(-50%, -20px);
+  z-index: 999999;
+  background: #315f36;
+  color: #fff;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
 
+.payment-toast.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+@media (max-width: 600px) {
+  .payment-toast {
+    top: 16px;
+    width: calc(100vw - 32px);
+    font-size: 15px;
+    padding: 14px 16px;
+  }
+}
 
 
 </style>
@@ -1719,10 +1754,6 @@ function renderDrinkPayments() {
       return sum + item.quantity * (line?.unitPrice || 0);
     }, 0);
 
-    if (!confirm(
-      `${paymentMethod} bestätigen?\n\n` +
-      `Tisch ${table}\nBetrag: ${money(amount)}`
-    )) return;
 
     const originalText = payButton.textContent;
     payButton.disabled = true;
@@ -1745,14 +1776,11 @@ function renderDrinkPayments() {
 
       await refreshOrders();
 
-      say(
-        `Zahlung von ${
-          money(Number(result?.paid_amount ?? amount))
-        } erfasst. Noch offen am Tisch: ${
-          money(Number(result?.remaining_amount ?? 0))
-        }.`,
-        false
-      );
+      showPaymentToast(
+  `✓ ${paymentMethod}-Zahlung von ${money(
+    Number(result?.paid_amount ?? amount)
+  )} erfolgreich gespeichert`
+);
 
     } catch (e) {
       console.error('Artikelzahlung fehlgeschlagen:', e);
@@ -1777,7 +1805,25 @@ $('tableNumber')?.addEventListener('change', () => {
 
 
 
+function showPaymentToast(message) {
+  let toast = document.getElementById('paymentToast');
 
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'paymentToast';
+    toast.className = 'payment-toast';
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = message;
+  toast.classList.add('show');
+
+  clearTimeout(toast.hideTimer);
+
+  toast.hideTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2000);
+}
 
   
 
@@ -1936,6 +1982,7 @@ function renderOrders() {
         button.disabled = false;
         say('Status konnte nicht gespeichert werden: ' + e.message, true);
       }
+
     });
   });
 }
