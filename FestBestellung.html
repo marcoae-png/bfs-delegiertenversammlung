@@ -3186,15 +3186,11 @@ document.addEventListener('click', async function (event) {
     if (await initConnection()) {
       const { data: { session } } = await sb.auth.getSession();
 
-     
-if (session) {
-  await onSignedIn(session.user);
-} else {
-  $('appPanel')?.classList.add('hidden');
-  $('logoutBtn')?.classList.add('hidden');
-  $('loginPanel')?.classList.remove('hidden');
-}
-
+      if (session) {
+        await onSignedIn(session.user);
+      } else {
+        $('loginPanel').classList.remove('hidden');
+      }
     }
   } catch (e) {
     console.warn(e);
