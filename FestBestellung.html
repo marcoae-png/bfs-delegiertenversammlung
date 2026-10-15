@@ -963,6 +963,26 @@ button[data-edit-menu]:disabled {
 
 
 
+.open-amounts-box {
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px solid #e5a0a0;
+  border-radius: 10px;
+  background: #fff4f4;
+}
+
+.open-amounts-box label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+#openAmountsSummary {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #b42318;
+}
+
 
 
 
@@ -1044,26 +1064,24 @@ button[data-edit-menu]:disabled {
 <nav class="tabs" id="tabs"></nav>
 
 
-
 <section id="serviceView" class="panel hidden">
   <h2 class="section-title">Neue Bestellung</h2>
 
   <div class="grid">
     <div>
-      
-<label for="tableNumber">Tisch</label>
-<select id="tableNumber"></select>
+      <label for="tableNumber">Tisch</label>
+      <select id="tableNumber"></select>
 
-<label for="paymentMethod">Zahlungsart</label>
-<select id="paymentMethod">
-  <option value="Bar">Bar</option>
-  <option value="TWINT">TWINT</option>
-</select>
-
+      <div class="open-amounts-box">
+        <label>Offene Beträge – alle Tische</label>
+        <div id="openAmountsSummary">
+          Offene Beträge werden geladen …
+        </div>
+      </div>
     </div>
-      
-
   </div>
+
+
 
   <h3>Karte</h3>
   <div id="menuGrid" class="menu-grid"></div>
@@ -1329,6 +1347,70 @@ function updatePendingCounter(elementId, count) {
 
 
 
+
+
+async function loadOpenAmounts() {
+  const el = document.getElementById('openAmountsSummary');
+  if (!el) {
+    console.error('Element openAmountsSummary nicht gefunden.');
+    return;
+  }
+
+  el.textContent = 'Offene Beträge werden geladen …';
+
+  try {
+    const { data, error } = await sb.rpc('get_open_table_amounts');
+
+    if (error) throw error;
+
+    console.log('Offene Beträge – Supabase:', data);
+
+    const rows = data || [];
+    const total = rows.reduce(
+      (sum, row) => sum + Number(row.open_amount || 0),
+      0
+    );
+
+    if (!rows.length || total <= 0) {
+      el.style.color = '#16803c';
+      el.textContent = '✓ Keine offenen Beträge.';
+      return;
+    }
+
+    el.style.color = '#b42318';
+
+    el.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;
+                  gap:8px;font-size:0.9rem;margin-bottom:4px">
+        <span>Gesamt offen</span>
+        <strong>CHF ${total.toFixed(2)}</strong>
+      </div>
+      <div style="font-size:0.75rem;color:#666;margin-bottom:4px">
+        ${rows.length} offene ${rows.length === 1 ? 'Tisch' : 'Tische'}
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:0.8rem">
+        ${rows.map(row => `
+          <span>
+            Tisch ${row.table_number}:
+            <strong>CHF ${Number(row.open_amount).toFixed(2)}</strong>
+          </span>
+        `).join('')}
+      </div>
+    `;
+  } catch (err) {
+    console.error('loadOpenAmounts:', err);
+    el.textContent = 'Fehler beim Laden der offenen Beträge.';
+  }
+}
+
+
+
+
+
+
+
+
+
 function renderTabs() {
   const all = [
     ['service', 'Neue Bestellung'],
@@ -1401,10 +1483,14 @@ function showTab(tab) {
     b.classList.toggle('active', b.dataset.tab === tab);
   });
 
-  // Bestellungen auch für die Getränkekasse neu laden
-  if (['service', 'orders', 'bar', 'runner'].includes(tab)) {
-    refreshOrders();
-  }
+
+if (['service', 'orders', 'bar', 'runner'].includes(tab)) {
+  refreshOrders();
+}
+
+if (tab === 'service') {
+  loadOpenAmounts();
+}
 
   if (tab === 'admin') loadAdmin();
   if (tab === 'closing') loadClosingHistory();
@@ -1572,23 +1658,46 @@ async function submitOrder() {
     return;
   }
 
-  const tableEl = $('tableNumber');
-  const methodEl = $('paymentMethod');
-  const button = $('submitOrderBtn');
 
-  if (!tableEl || !methodEl || !button) {
-    console.error('Fehlendes Element:', {
-      tableNumber: !!tableEl,
-      paymentMethod: !!methodEl,
-      submitOrderBtn: !!button
-    });
 
-    say('Bestellung nicht möglich: Ein benötigtes Eingabefeld fehlt.', true);
-    return;
-  }
 
-  const table = Number(tableEl.value);
-  const method = methodEl.value;
+
+const tableEl = $('tableNumber');
+const methodEl = $('paymentMethod');
+const button = $('submitOrderBtn');
+
+if (!tableEl || !button) {
+  console.error('Fehlendes Element:', {
+    tableNumber: !!tableEl,
+    paymentMethod: !!methodEl,
+    submitOrderBtn: !!button
+  });
+
+  say('Bestellung nicht möglich: Tischwahl oder Bestellbutton fehlt.', true);
+  return;
+}
+
+
+
+console.log('Feldprüfung:', {
+  tableNumber: !!tableEl,
+  paymentMethod: !!methodEl,
+  submitOrderBtn: !!button
+});
+
+
+ if (!tableEl || !button) {
+  console.error('Fehlendes Element:', {
+    tableNumber: !!tableEl,
+    submitOrderBtn: !!button
+  });
+
+  say('Bestellung nicht möglich: Tischwahl oder Bestellbutton fehlt.', true);
+  return;
+}
+
+ const table = Number(tableEl.value);
+const method = methodEl ? methodEl.value : 'cash';
 
   const items = Array.from(cart.values()).map(i => ({
     menu_item_id: i.menu_item_id,
@@ -1614,6 +1723,7 @@ async function submitOrder() {
     );
 
     await refreshOrders();
+await loadOpenAmounts();
   } catch (e) {
     console.error('submitOrder:', e);
     say('Bestellung konnte nicht gespeichert werden: ' + e.message, true);
@@ -1886,25 +1996,12 @@ function renderDrinkPayments() {
     return;
   }
 
-  const todayZurich = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/Zurich',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).format(new Date());
 
-  const isToday = value => value &&
-    new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Europe/Zurich',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    }).format(new Date(value)) === todayZurich;
+const tableOrders = orders.filter(o =>
+  String(o.table_number ?? o.table_no ?? '') === table
+);
 
-  const tableOrders = orders.filter(o =>
-    String(o.table_number ?? o.table_no ?? '') === table &&
-    isToday(o.created_at)
-  );
+
 
   const lines = [];
 
@@ -2118,6 +2215,7 @@ function renderDrinkPayments() {
         }
       );
 
+
       if (error) throw error;
 
       const result = Array.isArray(data) ? data[0] : data;
@@ -2126,17 +2224,34 @@ function renderDrinkPayments() {
 
       await refreshOrders();
 
+
+      // Erfolgsmeldung anzeigen
       showPaymentToast(
-  `✓ ${paymentMethod}-Zahlung von ${money(
-    Number(result?.paid_amount ?? amount)
-  )} erfolgreich gespeichert`
-);
+        `✓ ${paymentMethod}-Zahlung von ${money(
+          Number(result?.paid_amount ?? amount)
+        )} erfolgreich gespeichert`
+      );
+
+      // Auswahl zurücksetzen
+      drinkPaymentSelection.clear();
+
+      // Daten aktualisieren
+      await refreshOrders();
+      await loadOpenAmounts();
+      renderDrinkPayments();
 
     } catch (e) {
-      console.error('Artikelzahlung fehlgeschlagen:', e);
+      console.error('Artikelzahlung fehlgeschlagen:', {
+        message: e?.message,
+        details: e?.details,
+        hint: e?.hint,
+        code: e?.code,
+        error: e
+      });
 
       say(
-        'Zahlung konnte nicht gespeichert werden: ' + e.message,
+        'Zahlung konnte nicht gespeichert werden: ' +
+        (e?.message || 'Unbekannter Fehler'),
         true
       );
 
@@ -2150,7 +2265,23 @@ function renderDrinkPayments() {
 $('tableNumber')?.addEventListener('change', () => {
   drinkPaymentSelection.clear();
   renderDrinkPayments();
+  loadOpenAmounts();
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2176,6 +2307,17 @@ function showPaymentToast(message) {
 }
 
   
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2280,6 +2422,7 @@ function bindStationButtons(container) {
 
         // Status und Stationslisten nach dem Speichern aktualisieren
         await refreshOrders();
+await loadOpenAmounts();
 
       } catch (e) {
         button.disabled = false;
@@ -2293,6 +2436,7 @@ function bindStationButtons(container) {
     });
   });
 }
+
 
 
 
@@ -2348,7 +2492,7 @@ function renderOrders() {
     bindStationButtons(barList);
   }
 
-  // LÄUFER: eine Gruppe mit ESSEN und GETRÄNKE
+  // LÄUFER
   const runnerList = $('runnerList');
 
   if (!runnerList) {
@@ -2415,41 +2559,40 @@ function renderOrders() {
             ${inDelivery ? 'disabled' : ''}>
             ${inDelivery ? 'In Auslieferung' : 'In Auslieferung übernehmen'}
           </button>
-          
+
+ 
 <button type="button" class="warn"
   data-runner-deliver="${esc(String(o.id))}"
   data-runner-station="${station}">
   Ausgeliefert
 </button>
+
         </div>
       </article>
     `;
   };
 
-  
-runnerList.innerHTML = `
-  <div class="runner-stations">
+  runnerList.innerHTML = `
+    <div class="runner-stations">
+      <section class="runner-section runner-food">
+        <h2>🍽️ ESSEN (${foodJobs.length})</h2>
+        <div class="runner-orders">
+          ${foodJobs.length
+            ? foodJobs.map(job => renderJob(job, 'food')).join('')
+            : '<p class="muted runner-empty">Kein fertiges Essen zum Ausliefern.</p>'}
+        </div>
+      </section>
 
-    <section class="runner-section runner-food">
-      <h2>🍽️ ESSEN (${foodJobs.length})</h2>
-      <div class="runner-orders">
-        ${foodJobs.length
-          ? foodJobs.map(job => renderJob(job, 'food')).join('')
-          : '<p class="muted runner-empty">Kein fertiges Essen zum Ausliefern.</p>'}
-      </div>
-    </section>
-
-    <section class="runner-section runner-drinks">
-      <h2>🥤 GETRÄNKE (${drinkJobs.length})</h2>
-      <div class="runner-orders">
-        ${drinkJobs.length
-          ? drinkJobs.map(job => renderJob(job, 'drinks')).join('')
-          : '<p class="muted runner-empty">Keine fertigen Getränke zum Ausliefern.</p>'}
-      </div>
-    </section>
-
-  </div>
-`;
+      <section class="runner-section runner-drinks">
+        <h2>🥤 GETRÄNKE (${drinkJobs.length})</h2>
+        <div class="runner-orders">
+          ${drinkJobs.length
+            ? drinkJobs.map(job => renderJob(job, 'drinks')).join('')
+            : '<p class="muted runner-empty">Keine fertigen Getränke zum Ausliefern.</p>'}
+        </div>
+      </section>
+    </div>
+  `;
 
   runnerList.querySelectorAll(
     '[data-runner-start], [data-runner-deliver]'
@@ -2475,9 +2618,22 @@ runnerList.innerHTML = `
           p_status: nextStatus
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Läuferstatus konnte nicht geändert werden:', {
+            orderId,
+            station,
+            nextStatus,
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
+
+          throw error;
+        }
 
         await refreshOrders();
+        await loadOpenAmounts();
 
         say(nextStatus === 'delivered'
           ? (station === 'food'
@@ -2488,9 +2644,14 @@ runnerList.innerHTML = `
               : 'Getränke werden ausgeliefert.')
         );
       } catch (e) {
+        console.error('Lieferstatus konnte nicht gespeichert werden:', e);
         button.disabled = false;
-        say('Lieferstatus konnte nicht gespeichert werden: ' +
-          (e?.message || String(e)), true);
+
+        say(
+          'Lieferstatus konnte nicht gespeichert werden: ' +
+          (e?.message || String(e)),
+          true
+        );
       }
     });
   });
