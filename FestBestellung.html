@@ -1260,7 +1260,8 @@ button[data-edit-menu]:disabled {
 #menuGrid > .menu-category-sonstiges { grid-column: 1; grid-row: 4; }
 #menuGrid > .menu-category { min-width: 0; width: 100%; margin: 0 !important; }
 #menuGrid .menu-category-getränke .menu-category-grid {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  /* Schmalere Getränkekacheln: mehr Artikel nebeneinander */
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 9px;
 }
 #menuGrid .menu-category-essen .menu-category-grid,
@@ -1269,11 +1270,14 @@ button[data-edit-menu]:disabled {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 9px;
 }
-#menuGrid .item { padding: 10px 12px; }
-#menuGrid .item h3 { font-size: .95rem; }
+#menuGrid .item { padding: 12px 13px; }
+#menuGrid .item h3 { font-size: 1.08rem; line-height: 1.3; }
+#menuGrid .item .price { font-size: 1rem; }
+#menuGrid .item .tile-hint { font-size: .9rem; }
+#menuGrid .item .cart-count { font-size: .95rem; }
 @media (max-width: 800px) {
   #menuGrid .menu-category-getränke .menu-category-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 6px;
   }
   #menuGrid .menu-category-essen .menu-category-grid,
@@ -1292,9 +1296,11 @@ button[data-edit-menu]:disabled {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
   }
-  #menuGrid .item { padding: 8px; min-height: 0; }
-  #menuGrid .item h3 { font-size: .85rem; overflow-wrap: anywhere; }
-  #menuGrid .item .price { font-size: .8rem; }
+  #menuGrid .item { padding: 10px 8px; min-height: 0; }
+  #menuGrid .item h3 { font-size: .98rem; line-height: 1.25; overflow-wrap: anywhere; }
+  #menuGrid .item .price { font-size: .9rem; }
+  #menuGrid .item .tile-hint { font-size: .78rem; }
+  #menuGrid .item .cart-count { font-size: .82rem; }
 }
 
 </style>
