@@ -1006,8 +1006,23 @@ button[data-edit-menu]:disabled {
   color: #263746;
 }
 #menuGrid .drink-subgroup-warm .drink-subgroup-title {
-  background: #fff0dc;
-  color: #744315;
+  background: #cfe5fb;
+  color: #164b7a;
+  border: 1px solid #9fc8ef;
+}
+
+/* Warme Getränke dezent blau hervorheben */
+#menuGrid .drink-subgroup-warm .menu-item-card {
+  background: #e8f3ff;
+  border-color: #a9cfee;
+}
+#menuGrid .drink-subgroup-warm .menu-item-card:hover {
+  background: #dceeff;
+  border-color: #78b3e5;
+}
+#menuGrid .drink-subgroup-warm .menu-item-card.selected {
+  background: #d5eaff;
+  border-color: #347fbd;
 }
 #menuGrid .drink-subgroup-count {
   margin-left: auto;
@@ -1301,6 +1316,41 @@ button[data-edit-menu]:disabled {
   #menuGrid .item .price { font-size: .9rem; }
   #menuGrid .item .tile-hint { font-size: .78rem; }
   #menuGrid .item .cart-count { font-size: .82rem; }
+}
+
+/* Warme Getränke: die KACHELN selbst klarer blau einfärben */
+#menuGrid .drink-subgroup-warm .menu-item-card,
+#menuGrid .drink-subgroup-warm .item {
+  background: #a9d2ff !important;
+  border-color: #3f83cc !important;
+}
+#menuGrid .drink-subgroup-warm .menu-item-card h3,
+#menuGrid .drink-subgroup-warm .item h3 {
+  color: #0b3768 !important;
+}
+#menuGrid .drink-subgroup-warm .menu-item-card .price,
+#menuGrid .drink-subgroup-warm .item .price {
+  color: #0d4a8a !important;
+}
+#menuGrid .drink-subgroup-warm .menu-item-card:hover,
+#menuGrid .drink-subgroup-warm .item:hover {
+  background: #8fc1ff !important;
+  border-color: #246db8 !important;
+}
+#menuGrid .drink-subgroup-warm .menu-item-card.selected,
+#menuGrid .drink-subgroup-warm .item.selected {
+  background: #73aff7 !important;
+  border: 2px solid #105ba5 !important;
+}
+
+
+/* Überschrift „Warme Getränke“ wieder gelb – die Getränkekacheln bleiben blau. */
+#menuGrid .drink-subgroup-warm > .drink-subgroup-title {
+  background: #ffd84d !important;
+  color: #493700 !important;
+  border: 1px solid #e5b900;
+  border-radius: 9px;
+  padding: 9px 12px;
 }
 
 </style>
