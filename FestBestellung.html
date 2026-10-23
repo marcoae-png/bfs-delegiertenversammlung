@@ -1245,6 +1245,58 @@ button[data-edit-menu]:disabled {
   #menuGrid .item .price { font-size: 8px; }
 }
 
+
+/* Neue Bestellung: Getränke oben, Essen darunter – beide Bereiche nutzen die volle Breite. */
+.wrap { max-width: 1550px; }
+#menuGrid {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 16px !important;
+  align-items: start;
+}
+#menuGrid > .menu-category-getränke { grid-column: 1; grid-row: 1; }
+#menuGrid > .menu-category-essen { grid-column: 1; grid-row: 2; }
+#menuGrid > .menu-category-dessert { grid-column: 1; grid-row: 3; }
+#menuGrid > .menu-category-sonstiges { grid-column: 1; grid-row: 4; }
+#menuGrid > .menu-category { min-width: 0; width: 100%; margin: 0 !important; }
+#menuGrid .menu-category-getränke .menu-category-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 9px;
+}
+#menuGrid .menu-category-essen .menu-category-grid,
+#menuGrid .menu-category-dessert .menu-category-grid,
+#menuGrid .menu-category-sonstiges .menu-category-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+}
+#menuGrid .item { padding: 10px 12px; }
+#menuGrid .item h3 { font-size: .95rem; }
+@media (max-width: 800px) {
+  #menuGrid .menu-category-getränke .menu-category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  #menuGrid .menu-category-essen .menu-category-grid,
+  #menuGrid .menu-category-dessert .menu-category-grid,
+  #menuGrid .menu-category-sonstiges .menu-category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+}
+@media (max-width: 480px) {
+  #menuGrid { gap: 12px !important; padding: 0; }
+  #menuGrid .menu-category-getränke .menu-category-grid,
+  #menuGrid .menu-category-essen .menu-category-grid,
+  #menuGrid .menu-category-dessert .menu-category-grid,
+  #menuGrid .menu-category-sonstiges .menu-category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+  #menuGrid .item { padding: 8px; min-height: 0; }
+  #menuGrid .item h3 { font-size: .85rem; overflow-wrap: anywhere; }
+  #menuGrid .item .price { font-size: .8rem; }
+}
+
 </style>
 </head>
 <body>
