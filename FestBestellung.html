@@ -1186,28 +1186,62 @@ button[data-edit-menu]:disabled {
   margin: 0 0 5px;
 }
 @media (max-width: 600px) {
+  /* Handy: zwei klare Hauptbereiche nebeneinander, ohne horizontales Scrollen. */
   #menuGrid {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-    gap: 7px !important;
+    gap: 8px !important;
+    padding: 0 2px;
+    align-items: start;
   }
+  #menuGrid > .menu-category { min-width: 0; }
   #menuGrid .menu-category-title {
     font-size: 12px;
     line-height: 1.2;
     gap: 3px;
+    margin-bottom: 6px;
+    padding-bottom: 5px;
     overflow-wrap: anywhere;
   }
   #menuGrid .menu-category-count { font-size: 9px; }
-  #menuGrid .item { padding: 5px 4px; border-radius: 7px; }
-  #menuGrid .item h3 { font-size: 10px; line-height: 1.15; }
-  #menuGrid .item .price { font-size: 9px; }
-  #menuGrid .item .tile-bottom { padding-top: 2px; margin-top: 1px; }
-  #menuGrid .item .cart-count { font-size: 9px; padding: 2px 4px; }
+  /* Drei Kacheln pro Bereich bleiben erhalten, Kacheln sind aber besser lesbar. */
   #menuGrid .menu-category-grid,
   #menuGrid .menu-category-getränke .menu-category-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 4px;
   }
-  #menuGrid .drink-subgroup-title { font-size: 10px; }
+  #menuGrid .item {
+    min-width: 0;
+    padding: 6px 3px;
+    border-radius: 7px;
+    gap: 2px;
+    min-height: 48px;
+    box-sizing: border-box;
+  }
+  #menuGrid .item h3 {
+    font-size: 10px;
+    line-height: 1.2;
+    margin: 0 0 2px;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+  #menuGrid .item .price {
+    font-size: 9px;
+    line-height: 1.1;
+    font-weight: 600;
+    white-space: normal;
+  }
+  #menuGrid .item .tile-bottom { padding-top: 2px; margin-top: 1px; gap: 2px; }
+  #menuGrid .item .cart-count { font-size: 9px; padding: 2px 4px; }
+  #menuGrid .drink-subgroup { margin-bottom: 7px; }
+  #menuGrid .drink-subgroup-title { font-size: 10px; margin-bottom: 4px; }
+}
+@media (max-width: 370px) {
+  #menuGrid { gap: 5px !important; }
+  #menuGrid .menu-category-grid,
+  #menuGrid .menu-category-getränke .menu-category-grid { gap: 3px; }
+  #menuGrid .item { padding: 5px 2px; }
+  #menuGrid .item h3 { font-size: 9px; }
+  #menuGrid .item .price { font-size: 8px; }
 }
 
 </style>
