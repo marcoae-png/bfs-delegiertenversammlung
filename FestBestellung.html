@@ -1318,31 +1318,55 @@ button[data-edit-menu]:disabled {
   #menuGrid .item .cart-count { font-size: .82rem; }
 }
 
-/* Warme Getränke: die KACHELN selbst klarer blau einfärben */
+/* Kalte Getränke: Kacheln leicht grünlich gestalten */
+#menuGrid .drink-subgroup-kalt .menu-item-card,
+#menuGrid .drink-subgroup-kalt .item {
+  background: #d9eee2 !important;
+  border-color: #8bbda0 !important;
+}
+#menuGrid .drink-subgroup-kalt .menu-item-card h3,
+#menuGrid .drink-subgroup-kalt .item h3 {
+  color: #24563a !important;
+}
+#menuGrid .drink-subgroup-kalt .menu-item-card .price,
+#menuGrid .drink-subgroup-kalt .item .price {
+  color: #2d6946 !important;
+}
+#menuGrid .drink-subgroup-kalt .menu-item-card:hover,
+#menuGrid .drink-subgroup-kalt .item:hover {
+  background: #c5e4d1 !important;
+  border-color: #6ba783 !important;
+}
+#menuGrid .drink-subgroup-kalt .menu-item-card.selected,
+#menuGrid .drink-subgroup-kalt .item.selected {
+  background: #b0d9bf !important;
+  border: 2px solid #397a52 !important;
+}
+
+/* Warme Getränke bleiben blau */
 #menuGrid .drink-subgroup-warm .menu-item-card,
 #menuGrid .drink-subgroup-warm .item {
-  background: #a9d2ff !important;
-  border-color: #3f83cc !important;
+  background: #e8f3ff !important;
+  border-color: #a9cfee !important;
 }
 #menuGrid .drink-subgroup-warm .menu-item-card h3,
 #menuGrid .drink-subgroup-warm .item h3 {
-  color: #0b3768 !important;
+  color: #164b7a !important;
 }
 #menuGrid .drink-subgroup-warm .menu-item-card .price,
 #menuGrid .drink-subgroup-warm .item .price {
-  color: #0d4a8a !important;
+  color: #205f91 !important;
 }
 #menuGrid .drink-subgroup-warm .menu-item-card:hover,
 #menuGrid .drink-subgroup-warm .item:hover {
-  background: #8fc1ff !important;
-  border-color: #246db8 !important;
+  background: #dceeff !important;
+  border-color: #78b3e5 !important;
 }
 #menuGrid .drink-subgroup-warm .menu-item-card.selected,
 #menuGrid .drink-subgroup-warm .item.selected {
-  background: #73aff7 !important;
-  border: 2px solid #105ba5 !important;
+  background: #d5eaff !important;
+  border: 2px solid #347fbd !important;
 }
-
 
 /* Überschrift „Warme Getränke“ wieder gelb – die Getränkekacheln bleiben blau. */
 #menuGrid .drink-subgroup-warm > .drink-subgroup-title {
