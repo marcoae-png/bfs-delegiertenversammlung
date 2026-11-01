@@ -1458,7 +1458,10 @@ button[data-edit-menu]:disabled {
 
 
 
-  <h3>Karte</h3>
+  <div class="menu-heading-actions" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <h3 style="margin:0">Karte</h3>
+    <button id="clearSelectionBtn" type="button" class="secondary">Auswahl löschen</button>
+  </div>
   <div id="menuGrid" class="menu-grid">
       <section class="menu-category menu-category-essen">
         <h2 class="menu-category-title">
@@ -2823,6 +2826,11 @@ function renderMenu() {
 
 
 
+
+function clearSelection() {
+  cart.clear();
+  renderMenu();
+}
 
 function addToCart(id){
   const item=menu.find(m=>m.id===id);
@@ -4414,6 +4422,7 @@ onClickIfExists('loginBtn', async () => {
 
 onClickIfExists('logoutBtn', logout);
 onClickIfExists('submitOrderBtn', submitOrder);
+onClickIfExists('clearSelectionBtn', clearSelection);
 
 onClickIfExists('refreshRunnerBtn', refreshOrders);
 onClickIfExists('addMenuBtn', addMenuItem);
