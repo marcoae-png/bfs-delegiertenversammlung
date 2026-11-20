@@ -2700,7 +2700,7 @@ async function loadOpenAmounts() {
       el.style.color = '#16803c';
       el.closest('.open-amounts-box')?.classList.add('open-amounts-ok');
       el.textContent = '✓ Keine offenen Beträge.';
-      return;
+      return 0;
     }
 
     el.style.color = '#b42318';
@@ -2724,9 +2724,11 @@ async function loadOpenAmounts() {
         `).join('')}
       </div>
     `;
+    return total;
   } catch (err) {
     console.error('loadOpenAmounts:', err);
     el.textContent = 'Fehler beim Laden der offenen Beträge.';
+    return null;
   }
 }
 
@@ -3624,8 +3626,11 @@ const tableOrders = orders.filter(o =>
       await loadOpenAmounts();
       renderDrinkPayments();
 
-      // Nach erfolgreicher Abrechnung wieder ganz nach oben scrollen
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Nur nach oben scrollen, wenn an DIESEM Tisch nichts mehr offen ist
+      // (andere Tische / andere Nutzer spielen dafür keine Rolle)
+      if (!container.querySelector('[data-drink-pay]')) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
 
     } catch (e) {
       console.error('Artikelzahlung fehlgeschlagen:', {
