@@ -1463,6 +1463,12 @@ button[data-edit-menu]:disabled {
 #menuGrid .drink-subgroup-gratis .item:hover { background: #e9defa !important; border-color: #8f72c4 !important; }
 #menuGrid .drink-subgroup-gratis .menu-item-card.selected,
 #menuGrid .drink-subgroup-gratis .item.selected { background: #dccbf3 !important; border: 2px solid #6f4cab !important; }
+
+/* Offene Beträge: grün wenn nichts offen, rot (Standard) bei offenen Beträgen */
+.open-amounts-box.open-amounts-ok {
+  border-color: #8bc9a2;
+  background: #eaf7ef;
+}
 </style>
 </head>
 <body>
@@ -1535,7 +1541,7 @@ button[data-edit-menu]:disabled {
       <label for="tableNumber">Tisch</label>
       <select id="tableNumber"><option value="1">Tisch 1</option><option value="2">Tisch 2</option><option value="3">Tisch 3</option><option value="4">Tisch 4</option><option value="5">Tisch 5</option><option value="6">Tisch 6</option><option value="7">Tisch 7</option><option value="8">Tisch 8</option><option value="9">Tisch 9</option><option value="10">Tisch 10</option><option value="11">Tisch 11</option><option value="12">Tisch 12</option><option value="13">Tisch 13</option><option value="14">Tisch 14</option><option value="15">Tisch 15</option><option value="16">Tisch 16</option><option value="17">Tisch 17</option><option value="18">Tisch 18</option><option value="19">Tisch 19</option><option value="20">Tisch 20</option><option value="21">Tisch 21</option><option value="22">Tisch 22</option><option value="23">Tisch 23</option><option value="24">Tisch 24</option><option value="25">Tisch 25</option><option value="26">Tisch 26</option><option value="27">Tisch 27</option><option value="28">Tisch 28</option><option value="29">Tisch 29</option><option value="30">Tisch 30</option></select>
 
-      <div class="open-amounts-box">
+      <div class="open-amounts-box open-amounts-ok">
         <label>Offene Beträge – alle Tische</label>
         <div id="openAmountsSummary" style="color: rgb(22, 128, 60);">✓ Keine offenen Beträge.</div>
       </div>
@@ -1912,7 +1918,7 @@ button[data-edit-menu]:disabled {
 
   <hr style="margin:24px 0">
 
-  <h3>Getränke abrechnen</h3>
+  <h3 id="drinkPaymentHeading" style="scroll-margin-top:12px">Getränke abrechnen</h3>
   <p class="muted">
     Offene Getränkebestellungen auswählen und pro Person abrechnen.
     Bereits bezahlte Menüs bleiben unberücksichtigt.
@@ -2653,11 +2659,13 @@ async function loadOpenAmounts() {
 
     if (!rows.length || total <= 0) {
       el.style.color = '#16803c';
+      el.closest('.open-amounts-box')?.classList.add('open-amounts-ok');
       el.textContent = '✓ Keine offenen Beträge.';
       return;
     }
 
     el.style.color = '#b42318';
+    el.closest('.open-amounts-box')?.classList.remove('open-amounts-ok');
 
     el.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;
@@ -3055,6 +3063,12 @@ const method = methodEl ? methodEl.value : 'cash';
 
     await refreshOrders();
 await loadOpenAmounts();
+
+    // Nach dem Senden direkt zur Getränkeabrechnung scrollen
+    requestAnimationFrame(() => {
+      const ziel = $('drinkPaymentHeading');
+      if (ziel) ziel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   } catch (e) {
     console.error('submitOrder:', e);
     say('Bestellung konnte nicht gespeichert werden: ' + e.message, true);
