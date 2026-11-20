@@ -1377,6 +1377,69 @@ button[data-edit-menu]:disabled {
   padding: 9px 12px;
 }
 
+
+/* Neue Bestellung: grössere Schrift in den Bestellungskacheln */
+#menuGrid .menu-category .item h3 {
+  font-size: 1.3rem !important;
+  line-height: 1.25 !important;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+#menuGrid .menu-category .item .price {
+  font-size: 1.2rem !important;
+  line-height: 1.2 !important;
+}
+#menuGrid .menu-category .item .tile-hint { font-size: 1rem !important; }
+#menuGrid .menu-category .item .cart-count {
+  font-size: 1.1rem !important;
+  padding: 3px 9px !important;
+}
+#menuGrid .menu-category .item { padding: 12px 13px !important; }
+#menuGrid .menu-category-getränke .item { padding: 10px 11px !important; }
+/* weniger Spalten, damit die grössere Schrift Platz hat */
+#menuGrid .menu-category-getränke .menu-category-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+#menuGrid .menu-category-essen .menu-category-grid,
+#menuGrid .menu-category-dessert .menu-category-grid,
+#menuGrid .menu-category-sonstiges .menu-category-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+@media (max-width: 1000px) {
+  #menuGrid .menu-category-getränke .menu-category-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  #menuGrid .menu-category-essen .menu-category-grid,
+  #menuGrid .menu-category-dessert .menu-category-grid,
+  #menuGrid .menu-category-sonstiges .menu-category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 600px) {
+  #menuGrid .menu-category .item h3 { font-size: 1.4rem !important; line-height: 1.2 !important; hyphens: auto; }
+  #menuGrid .menu-category .item .price { font-size: 1.25rem !important; }
+  #menuGrid .menu-category .item .tile-hint { font-size: 1rem !important; }
+  #menuGrid .menu-category .item .cart-count { font-size: 1.15rem !important; padding: 3px 10px !important; }
+  #menuGrid .menu-category .item { padding: 14px 10px !important; min-height: 90px !important; }
+  #menuGrid .menu-category-title { font-size: 1.3rem !important; }
+  #menuGrid .drink-subgroup-title { font-size: 1.1rem !important; }
+  #menuGrid .menu-category-getränke .menu-category-grid,
+  #menuGrid .menu-category-essen .menu-category-grid,
+  #menuGrid .menu-category-dessert .menu-category-grid,
+  #menuGrid .menu-category-sonstiges .menu-category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+}
+
+/* Minus-Button: einzelnes Stück wieder entfernen */
+#menuGrid .tile-count-wrap { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; }
+#menuGrid .tile-minus {
+  min-width: 44px; min-height: 44px; padding: 0 !important;
+  border-radius: 50% !important;
+  background: #b52f2f !important; color: #fff !important;
+  font-size: 1.6rem !important; line-height: 1 !important; font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+#menuGrid .tile-minus:active { transform: scale(.92); }
 </style>
 </head>
 <body>
@@ -2734,7 +2797,10 @@ function renderMenu() {
           <span class="tile-hint">
             <span aria-hidden="true">＋</span> 1 Stück hinzufügen
           </span>
-          <span class="cart-count">${q} Stk.</span>
+          <span class="tile-count-wrap">
+            ${q ? `<button type="button" class="tile-minus" data-remove-item="${esc(String(m.id))}" aria-label="${esc(m.name)} entfernen">−</button>` : ''}
+            <span class="cart-count">${q} Stk.</span>
+          </span>
         </div>
       </article>
     `;
@@ -2804,6 +2870,14 @@ function renderMenu() {
     ? kategorienHTML + sonstigeHTML
     : '<p class="muted">Noch keine aktiven Menüartikel vorhanden. Admin muss zuerst Artikel erfassen.</p>';
 
+  menuGrid.querySelectorAll('[data-remove-item]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      removeFromCart(btn.dataset.removeItem);
+    });
+    btn.addEventListener('keydown', e => e.stopPropagation());
+  });
+
   menuGrid.querySelectorAll('[data-add-item]').forEach(tile => {
     const hinzufuegen = () => addToCart(tile.dataset.addItem);
 
@@ -2838,6 +2912,13 @@ function addToCart(id){
   const current=cart.get(id)?.quantity||0;
   if(current>=99){say('Maximal 99 Stück pro Produkt möglich.',true);return;}
   cart.set(id,{menu_item_id:id,quantity:current+1,name:item.name,price:Number(item.price)});
+  renderMenu();
+}
+function removeFromCart(id){
+  const cur=cart.get(id);
+  if(!cur)return;
+  if(cur.quantity<=1)cart.delete(id);
+  else cart.set(id,{...cur,quantity:cur.quantity-1});
   renderMenu();
 }
 function updateCartTotal(){let total=0;for(const v of cart.values())total+=v.quantity*v.price;$('cartTotal').textContent=money(total);$('submitOrderBtn').disabled=cart.size===0;}
