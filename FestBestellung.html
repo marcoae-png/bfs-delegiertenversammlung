@@ -2884,7 +2884,7 @@ function renderMenu() {
 
     // Getränke für den Service in kalte und warme Getränke aufteilen.
     if (kategorie === 'Getränke') {
-      const istWarm = m => /kaffee|kafi|tee|espresso|cappuccino|latte|schoggi|heiss|getränk warm|punsch/i.test(String(m.name || ''));
+      const istWarm = m => /kaffee|kafi|tee|espresso|cappuccino|latte|schoggi|heiss|getränk warm|punsch|zwetschgen luz/i.test(String(m.name || ''));
       const istGratis = m => Number(m.price) === 0 || /gratis/i.test(String(m.name || ''));
       const gratisGetraenke = artikel.filter(istGratis);
       const bezahlteGetraenke = artikel.filter(m => !istGratis(m));
