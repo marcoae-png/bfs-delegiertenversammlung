@@ -4672,6 +4672,15 @@ document.addEventListener('click', async function (event) {
 })();
 
 // Ende der äusseren Hauptfunktion
+
+// Kachel «Offene Beträge» alle 5 Sekunden automatisch aktualisieren
+let offeneBetraegeLaeuft = false;
+setInterval(async () => {
+  if (offeneBetraegeLaeuft || document.hidden) return;
+  if (!sb || !currentUser) return;
+  offeneBetraegeLaeuft = true;
+  try { await loadOpenAmounts(); } finally { offeneBetraegeLaeuft = false; }
+}, 5000);
 })();
 
 // Passwort anzeigen/verbergen: ausserhalb ist hier in Ordnung
@@ -4732,16 +4741,7 @@ window.addEventListener('load', function () {
   updateCartBar();
 })();
 
-// Kachel «Offene Beträge» alle 5 Sekunden automatisch aktualisieren
-(function () {
-  let laeuft = false;
-  setInterval(async () => {
-    if (laeuft || document.hidden) return;
-    if (typeof sb === 'undefined' || !sb || !currentUser) return;
-    laeuft = true;
-    try { await loadOpenAmounts(); } finally { laeuft = false; }
-  }, 5000);
-})();
+
 </script>
 
 
