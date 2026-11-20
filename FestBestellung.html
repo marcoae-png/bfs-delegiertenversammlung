@@ -2681,14 +2681,15 @@ async function loadOpenAmounts() {
     return;
   }
 
-  el.textContent = 'Offene Beträge werden geladen …';
+  // Ladehinweis nur beim ersten Laden zeigen (kein Flackern bei der Auto-Aktualisierung)
+  if (el.dataset.loaded !== '1') el.textContent = 'Offene Beträge werden geladen …';
 
   try {
     const { data, error } = await sb.rpc('get_open_table_amounts');
 
     if (error) throw error;
 
-    console.log('Offene Beträge – Supabase:', data);
+    el.dataset.loaded = '1';
 
     const rows = data || [];
     const total = rows.reduce(
@@ -4729,6 +4730,17 @@ window.addEventListener('load', function () {
   document.addEventListener('click', () => setTimeout(updateCartBar, 50));
   setInterval(updateCartBar, 500);
   updateCartBar();
+})();
+
+// Kachel «Offene Beträge» alle 5 Sekunden automatisch aktualisieren
+(function () {
+  let laeuft = false;
+  setInterval(async () => {
+    if (laeuft || document.hidden) return;
+    if (typeof sb === 'undefined' || !sb || !currentUser) return;
+    laeuft = true;
+    try { await loadOpenAmounts(); } finally { laeuft = false; }
+  }, 5000);
 })();
 </script>
 
