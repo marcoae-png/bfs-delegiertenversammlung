@@ -4681,6 +4681,16 @@ setInterval(async () => {
   offeneBetraegeLaeuft = true;
   try { await loadOpenAmounts(); } finally { offeneBetraegeLaeuft = false; }
 }, 5000);
+
+// Küche, Theke / Ausschank und Läufer alle 5 Sekunden automatisch aktualisieren
+let stationenLaeuft = false;
+setInterval(async () => {
+  if (stationenLaeuft || document.hidden) return;
+  if (!sb || !currentUser || !profile) return;
+  if (!['orders', 'bar', 'runner'].includes(activeTab)) return;
+  stationenLaeuft = true;
+  try { await refreshOrders(); } finally { stationenLaeuft = false; }
+}, 5000);
 })();
 
 // Passwort anzeigen/verbergen: ausserhalb ist hier in Ordnung
