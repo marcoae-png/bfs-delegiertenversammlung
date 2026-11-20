@@ -1440,6 +1440,29 @@ button[data-edit-menu]:disabled {
   display: inline-flex; align-items: center; justify-content: center;
 }
 #menuGrid .tile-minus:active { transform: scale(.92); }
+
+/* Gratisgetränke: eigene Sparte unter den warmen Getränken (lila) */
+#menuGrid .drink-subgroup-gratis { margin-top: 14px; }
+#menuGrid .drink-subgroup-gratis > .drink-subgroup-title {
+  background: #e6dcf5 !important;
+  color: #3f2a63 !important;
+  border: 1px solid #b9a3dc;
+  border-radius: 9px;
+  padding: 9px 12px;
+}
+#menuGrid .drink-subgroup-gratis .menu-item-card,
+#menuGrid .drink-subgroup-gratis .item {
+  background: #f3edfb !important;
+  border-color: #b9a3dc !important;
+}
+#menuGrid .drink-subgroup-gratis .menu-item-card h3,
+#menuGrid .drink-subgroup-gratis .item h3 { color: #3f2a63 !important; }
+#menuGrid .drink-subgroup-gratis .menu-item-card .price,
+#menuGrid .drink-subgroup-gratis .item .price { color: #5a3d8a !important; }
+#menuGrid .drink-subgroup-gratis .menu-item-card:hover,
+#menuGrid .drink-subgroup-gratis .item:hover { background: #e9defa !important; border-color: #8f72c4 !important; }
+#menuGrid .drink-subgroup-gratis .menu-item-card.selected,
+#menuGrid .drink-subgroup-gratis .item.selected { background: #dccbf3 !important; border: 2px solid #6f4cab !important; }
 </style>
 </head>
 <body>
@@ -2812,8 +2835,11 @@ function renderMenu() {
     // Getränke für den Service in kalte und warme Getränke aufteilen.
     if (kategorie === 'Getränke') {
       const istWarm = m => /kaffee|kafi|tee|espresso|cappuccino|latte|schoggi|heiss|getränk warm|punsch/i.test(String(m.name || ''));
-      const warmeGetraenke = artikel.filter(istWarm);
-      const kalteGetraenke = artikel.filter(m => !istWarm(m));
+      const istGratis = m => Number(m.price) === 0 || /gratis/i.test(String(m.name || ''));
+      const gratisGetraenke = artikel.filter(istGratis);
+      const bezahlteGetraenke = artikel.filter(m => !istGratis(m));
+      const warmeGetraenke = bezahlteGetraenke.filter(istWarm);
+      const kalteGetraenke = bezahlteGetraenke.filter(m => !istWarm(m));
       const untergruppeHTML = (titel, icon, liste, klasse) => !liste.length ? '' : `
         <div class="drink-subgroup drink-subgroup-${klasse}">
           <h3 class="drink-subgroup-title"><span aria-hidden="true">${icon}</span> ${titel}<span class="drink-subgroup-count">${liste.length}</span></h3>
@@ -2829,6 +2855,7 @@ function renderMenu() {
           </h2>
           ${untergruppeHTML('Kalte Getränke', '🧊', kalteGetraenke, 'kalt')}
           ${untergruppeHTML('Warme Getränke', '☕', warmeGetraenke, 'warm')}
+          ${untergruppeHTML('Gratisgetränke', '🎁', gratisGetraenke, 'gratis')}
         </section>
       `;
     }
