@@ -1469,6 +1469,43 @@ button[data-edit-menu]:disabled {
   border-color: #8bc9a2;
   background: #eaf7ef;
 }
+
+/* Total + «Bestellung senden» laufen beim Scrollen durch die Karte mit */
+.cart-bar {
+  position: fixed !important;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  margin: 0 !important;
+  background: #fff;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+  border-top: 2px solid #b6d4c0;
+  box-shadow: 0 -6px 16px rgba(23, 33, 27, .18);
+  transition: transform .2s ease;
+}
+.cart-bar.cart-bar-hidden { transform: translateY(120%); pointer-events: none; }
+/* Platz unter der Karte, damit die feste Leiste nichts verdeckt */
+.order-area { padding-bottom: 90px; }
+.cart-bar .big { font-size: 1.5rem; }
+.cart-bar #submitOrderBtn {
+  font-size: 1.15rem;
+  padding: 14px 20px;
+  min-height: 52px;
+}
+@media (max-width: 600px) {
+  .cart-bar #submitOrderBtn { flex: 1; margin-left: 12px; }
+}
+
+/* Handy: Kopfbereich darf umbrechen, damit die Seite nicht breiter als der Bildschirm wird
+   (sonst rutscht die feste «Bestellung senden»-Leiste aus dem sichtbaren Bereich) */
+@media (max-width: 600px) {
+  header { flex-wrap: wrap !important; gap: 8px 12px !important; }
+  header .kopf-titel { flex: 1 1 140px !important; min-width: 0 !important; }
+  header .kopf-titel h1 { font-size: 1.1rem !important; overflow-wrap: anywhere; }
+  header .actions { margin-left: 0 !important; width: 100%; justify-content: space-between; }
+  #userLabel { min-width: 0; overflow-wrap: anywhere; }
+}
 </style>
 </head>
 <body>
@@ -1550,6 +1587,7 @@ button[data-edit-menu]:disabled {
 
 
 
+  <div class="order-area">
   <div class="menu-heading-actions" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
     <h3 style="margin:0">Karte</h3>
     <button id="clearSelectionBtn" type="button" class="secondary">Auswahl löschen</button>
@@ -1902,7 +1940,7 @@ button[data-edit-menu]:disabled {
       </section>
     </div>
 
-  <div class="actions" style="justify-content:space-between;margin-top:14px">
+  <div class="actions cart-bar" style="justify-content:space-between;margin-top:14px">
     <div>
       <span class="muted">Total</span>
       <div id="cartTotal" class="big">CHF&nbsp;0.00</div>
@@ -1910,6 +1948,7 @@ button[data-edit-menu]:disabled {
     <button id="submitOrderBtn" type="button" disabled="">
       Bestellung senden
     </button>
+  </div>
   </div>
 
   <p class="foot">
@@ -4667,6 +4706,22 @@ window.addEventListener('load', function () {
 
 
 
+
+// Feste Total-/Sende-Leiste ausblenden, sobald die Getränkeabrechnung sichtbar wird
+(function () {
+  function updateCartBar() {
+    const bar = document.querySelector('.cart-bar');
+    const ziel = document.getElementById('drinkPaymentHeading');
+    if (!bar || !ziel) return;
+    const sichtbar = ziel.getBoundingClientRect().top < window.innerHeight - 40;
+    bar.classList.toggle('cart-bar-hidden', sichtbar);
+  }
+  window.addEventListener('scroll', updateCartBar, { passive: true });
+  window.addEventListener('resize', updateCartBar);
+  document.addEventListener('click', () => setTimeout(updateCartBar, 50));
+  setInterval(updateCartBar, 500);
+  updateCartBar();
+})();
 </script>
 
 
