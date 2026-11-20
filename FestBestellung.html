@@ -3624,6 +3624,9 @@ const tableOrders = orders.filter(o =>
       await loadOpenAmounts();
       renderDrinkPayments();
 
+      // Nach erfolgreicher Abrechnung wieder ganz nach oben scrollen
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
     } catch (e) {
       console.error('Artikelzahlung fehlgeschlagen:', {
         message: e?.message,
